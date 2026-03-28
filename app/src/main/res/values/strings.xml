@@ -1,0 +1,50 @@
+<resources>
+    <string name="app_name">RKLUXfeet</string>
+
+    <!-- Main / Splash -->
+    <string name="app_tagline">Discover a curated collection of exquisite timepieces, crafted for every moment.</string>
+    <string name="btn_login">Login</string>
+    <string name="btn_register">Register</string>
+    <string name="terms_text">By continuing, you agree to our Terms of Service and Privacy Policy.</string>
+
+    <!-- Register -->
+    <string name="title_register">Register</string>
+    <string name="hint_full_name">Full Name</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Password</string>
+    <string name="already_have_account">Already have an account? Login</string>
+
+    <!-- Login -->
+    <string name="title_login">Login</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="btn_login_google">Login with Google</string>
+    <string name="no_account">Don\'t have an account? Sign Up</string>
+
+    <!-- Forgot Password -->
+    <string name="title_forgot_password">Forgot Password</string>
+    <string name="forgot_password_desc">Enter your email address and we\'ll send you instructions to reset your password.</string>
+    <string name="btn_send_reset">Send Reset Instructions</string>
+    <string name="remember_password">Remember your password? Login</string>
+
+    <!-- Set New Password -->
+    <string name="title_set_new_password">Set New Password</string>
+    <string name="hint_new_password">Enter new password</string>
+    <string name="label_new_password">New Password</string>
+    <string name="hint_confirm_password">Re-enter new password</string>
+    <string name="label_confirm_password">Confirm New Password</string>
+    <string name="password_requirements">Password must be at least 8 characters long and include a mix of letters, numbers, and symbols.</string>
+    <string name="btn_set_password">Set Password</string>
+
+    <!-- Password Updated -->
+    <string name="title_password_reset">Password Reset</string>
+    <string name="title_password_updated">Password Updated</string>
+    <string name="password_updated_desc">Your password has been successfully updated. Please log in with your new credentials.</string>
+    <string name="btn_back_to_login">Back to Login</string>
+
+    <!-- Common -->
+    <string name="back">Back</string>
+    <string name="content_description_shoe_image">Shoe image</string>
+    <string name="content_description_back">Go back</string>
+    <string name="content_description_google_logo">Google logo</string>
+    <string name="content_description_success_icon">Success icon</string>
+</resources>

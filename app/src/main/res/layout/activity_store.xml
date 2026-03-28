@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/homeBg"
+    tools:context=".StoreActivity">
+
+    <!-- Header Background -->
+    <View
+        android:id="@+id/headerBg"
+        android:layout_width="match_parent"
+        android:layout_height="140dp"
+        android:background="@drawable/bg_home_header"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Header App Bar -->
+    <RelativeLayout
+        android:id="@+id/rlAppBarStore"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="20dp"
+        app:layout_constraintTop_toTopOf="parent">
+        <ImageView
+            android:id="@+id/ivBackStore"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_arrow_back"
+            app:tint="#000000" 
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:fontFamily="sans-serif-black"
+            android:text="Shop"
+            android:textColor="#000000"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true">
+            <ImageView
+                android:id="@+id/ivCart"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_bag"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"/>
+            <TextView
+                android:id="@+id/tvCartBadge"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:background="@drawable/bg_badge_red"
+                android:textColor="#FFFFFF"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:visibility="gone"
+                android:elevation="4dp"
+                android:translationX="6dp"
+                android:translationY="-6dp"
+                android:layout_alignTop="@id/ivCart"
+                android:layout_alignEnd="@id/ivCart" />
+        </RelativeLayout>
+    </RelativeLayout>
+    
+    <!-- Search Bar -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cvSearchStore"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="24dp"
+        app:cardCornerRadius="25dp"
+        app:cardElevation="4dp"
+        app:cardBackgroundColor="#FFFFFF"
+        app:layout_constraintTop_toBottomOf="@id/rlAppBarStore">
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="16dp">
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_search"
+                app:tint="#8D8D8D"/>
+            <EditText
+                android:id="@+id/etSearch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:hint="Search for shoes..."
+                android:textColor="#000000"
+                android:textColorHint="#8D8D8D"
+                android:textSize="14sp"
+                android:layout_marginStart="10dp"
+                android:singleLine="true"
+                android:imeOptions="actionSearch" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Sort Chips Row (Main filter + advanced filter icon) -->
+    <LinearLayout
+        android:id="@+id/llSortContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="20dp"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="8dp"
+        app:layout_constraintTop_toBottomOf="@id/cvSearchStore">
+
+        <HorizontalScrollView
+            android:id="@+id/hsvSort"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:scrollbars="none">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingHorizontal="12dp"
+                android:gravity="center_vertical">
+
+                <TextView android:id="@+id/chipAll"         android:layout_width="wrap_content" android:layout_height="36dp" android:text="All"             android:gravity="center" android:paddingHorizontal="18dp" android:textSize="13sp" android:background="@drawable/bg_chip_active" android:textColor="#FFFFFF" android:layout_marginEnd="8dp" />
+                <TextView android:id="@+id/chipPriceLow"    android:layout_width="wrap_content" android:layout_height="36dp" android:text="Price: Low→High"  android:gravity="center" android:paddingHorizontal="18dp" android:textSize="13sp" android:background="@drawable/bg_chip_inactive" android:textColor="#000000" android:layout_marginEnd="8dp" />
+                <TextView android:id="@+id/chipPriceHigh"   android:layout_width="wrap_content" android:layout_height="36dp" android:text="Price: High→Low"  android:gravity="center" android:paddingHorizontal="18dp" android:textSize="13sp" android:background="@drawable/bg_chip_inactive" android:textColor="#000000" android:layout_marginEnd="8dp" />
+                <TextView android:id="@+id/chipNewArrivals" android:layout_width="wrap_content" android:layout_height="36dp" android:text="New Arrivals"      android:gravity="center" android:paddingHorizontal="18dp" android:textSize="13sp" android:background="@drawable/bg_chip_inactive" android:textColor="#000000" android:layout_marginEnd="8dp" />
+                <TextView android:id="@+id/chipBestseller"  android:layout_width="wrap_content" android:layout_height="36dp" android:text="Bestsellers"       android:gravity="center" android:paddingHorizontal="18dp" android:textSize="13sp" android:background="@drawable/bg_chip_inactive" android:textColor="#000000" android:layout_marginEnd="8dp" />
+            </LinearLayout>
+        </HorizontalScrollView>
+
+        <ImageView
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginEnd="12dp"
+            android:padding="8dp"
+            android:background="@drawable/bg_chip_inactive"
+            android:src="@drawable/ic_settings"
+            app:tint="#000000"/>
+    </LinearLayout>
+
+    <!-- Brand Filter Row -->
+    <HorizontalScrollView
+        android:id="@+id/hsvBrand"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none"
+        android:layout_marginTop="12dp"
+        app:layout_constraintTop_toBottomOf="@id/llSortContainer">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingHorizontal="20dp"
+            android:gravity="center_vertical">
+
+            <TextView android:id="@+id/brandAll"    android:layout_width="wrap_content" android:layout_height="32dp" android:text="All Brands" android:gravity="center" android:paddingHorizontal="16dp" android:textSize="12sp" android:background="@drawable/bg_chip_outline_active" android:textColor="#000000" android:layout_marginEnd="8dp" />
+            <TextView android:id="@+id/brandNike"   android:layout_width="wrap_content" android:layout_height="32dp" android:text="Nike"       android:gravity="center" android:paddingHorizontal="16dp" android:textSize="12sp" android:background="@drawable/bg_chip_outline_inactive" android:textColor="#757575" android:layout_marginEnd="8dp" />
+            <TextView android:id="@+id/brandAdidas" android:layout_width="wrap_content" android:layout_height="32dp" android:text="Adidas"     android:gravity="center" android:paddingHorizontal="16dp" android:textSize="12sp" android:background="@drawable/bg_chip_outline_inactive" android:textColor="#757575" android:layout_marginEnd="8dp" />
+            <TextView android:id="@+id/brandPuma"   android:layout_width="wrap_content" android:layout_height="32dp" android:text="Puma"       android:gravity="center" android:paddingHorizontal="16dp" android:textSize="12sp" android:background="@drawable/bg_chip_outline_inactive" android:textColor="#757575" android:layout_marginEnd="8dp" />
+            <TextView android:id="@+id/brandAsics"  android:layout_width="wrap_content" android:layout_height="32dp" android:text="Asics"      android:gravity="center" android:paddingHorizontal="16dp" android:textSize="12sp" android:background="@drawable/bg_chip_outline_inactive" android:textColor="#757575" android:layout_marginEnd="8dp" />
+            <TextView android:id="@+id/brandOther"  android:layout_width="wrap_content" android:layout_height="32dp" android:text="Others"     android:gravity="center" android:paddingHorizontal="16dp" android:textSize="12sp" android:background="@drawable/bg_chip_outline_inactive" android:textColor="#757575" android:layout_marginEnd="8dp" />
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <!-- Results Count -->
+    <TextView
+        android:id="@+id/tvResultsCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="16dp"
+        android:text="3 results"
+        android:textColor="#9E9E9E"
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@id/hsvBrand"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvStoreGrid"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginTop="12dp"
+        android:clipToPadding="false"
+        android:paddingBottom="24dp"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:spanCount="2"
+        app:layout_constraintTop_toBottomOf="@id/tvResultsCount"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigation"
+        tools:listitem="@layout/item_shoe_grid" />
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/bottomNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/bg_bottom_nav_dark"
+        app:tabIndicator="@drawable/tab_indicator_dash"
+        app:tabIndicatorGravity="top"
+        app:tabIconTint="@color/tab_icon_color"
+        app:tabRippleColor="@android:color/transparent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:elevation="12dp">
+
+        <com.google.android.material.tabs.TabItem
+            android:icon="@drawable/ic_home" />
+        <com.google.android.material.tabs.TabItem
+            android:icon="@drawable/ic_shop" />
+        <com.google.android.material.tabs.TabItem
+            android:icon="@drawable/ic_wishlist" />
+        <com.google.android.material.tabs.TabItem
+            android:icon="@drawable/ic_profile" />
+    </com.google.android.material.tabs.TabLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

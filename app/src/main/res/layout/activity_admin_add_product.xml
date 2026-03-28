@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FFFFFF">
+
+    <!-- Top Bar -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:background="#FFFFFF"
+        android:elevation="4dp"
+        android:paddingHorizontal="20dp">
+        <ImageView
+            android:id="@+id/ivAddProductBack"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_arrow_back"
+            app:tint="#1A1A2E" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="Add New Product"
+            android:textColor="#1A1A2E"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Product Name *" android:textColor="#000000" android:textStyle="bold" android:layout_marginBottom="6dp" />
+            <EditText
+                android:id="@+id/etAdminProductName"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:background="#F5F5F5"
+                android:hint="e.g. Nike Air Max 2025"
+                android:paddingHorizontal="16dp"
+                android:layout_marginBottom="20dp" />
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Price *" android:textColor="#000000" android:textStyle="bold" android:layout_marginBottom="6dp" />
+            <EditText
+                android:id="@+id/etAdminProductPrice"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:background="#F5F5F5"
+                android:hint="e.g. ₹2999"
+                android:paddingHorizontal="16dp"
+                android:inputType="numberDecimal"
+                android:layout_marginBottom="20dp" />
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Description" android:textColor="#000000" android:textStyle="bold" android:layout_marginBottom="6dp" />
+            <EditText
+                android:id="@+id/etAdminProductDesc"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:background="#F5F5F5"
+                android:hint="Product description..."
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="12dp"
+                android:gravity="top"
+                android:layout_marginBottom="20dp" />
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Specifications" android:textColor="#000000" android:textStyle="bold" android:layout_marginBottom="6dp" />
+            <EditText
+                android:id="@+id/etAdminProductSpecs"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:background="#F5F5F5"
+                android:hint="e.g. Sole: Rubber\nMaterial: Leather..."
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="12dp"
+                android:gravity="top"
+                android:layout_marginBottom="20dp" />
+
+            <!-- Image Section -->
+            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#EEEEEE" android:layout_marginBottom="20dp" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Product Image" android:textColor="#000000" android:textStyle="bold" android:textSize="16sp" android:layout_marginBottom="12dp" />
+
+            <Button
+                android:id="@+id/btnPickImage"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:text="📷  Pick Image from Gallery"
+                android:textAllCaps="false"
+                android:backgroundTint="#1A1A2E"
+                android:layout_marginBottom="12dp" />
+
+            <ImageView
+                android:id="@+id/ivAdminProductPreview"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:scaleType="centerCrop"
+                android:background="#F0F0F0"
+                android:layout_marginBottom="12dp"
+                android:visibility="gone" />
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="— or paste image URL —" android:textColor="#AAAAAA" android:textSize="13sp" android:layout_gravity="center_horizontal" android:layout_marginBottom="12dp" />
+
+            <EditText
+                android:id="@+id/etAdminImageUrl"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:background="#F5F5F5"
+                android:hint="https://... (optional)"
+                android:paddingHorizontal="16dp"
+                android:inputType="textUri"
+                android:layout_marginBottom="32dp" />
+
+            <Button
+                android:id="@+id/btnSaveAdminProduct"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="✅  Save Product"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                android:backgroundTint="#43A047" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

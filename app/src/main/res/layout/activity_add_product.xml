@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@color/white">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add New Product"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:layout_marginBottom="24dp" />
+
+    <EditText
+        android:id="@+id/etProductName"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:hint="Product Name (e.g. Nike Air Max)"
+        android:background="#F5F5F5"
+        android:paddingStart="16dp"
+        android:layout_marginBottom="16dp" />
+
+    <EditText
+        android:id="@+id/etProductPrice"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:hint="Price (e.g. ₹2999)"
+        android:background="#F5F5F5"
+        android:paddingStart="16dp"
+        android:layout_marginBottom="16dp" />
+
+    <EditText
+        android:id="@+id/etProductImageUrl"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:hint="Image URL (Optional)"
+        android:background="#F5F5F5"
+        android:paddingStart="16dp"
+        android:layout_marginBottom="24dp" />
+
+    <Button
+        android:id="@+id/btnSaveProduct"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="Upload to Cloud &amp; Save"
+        android:textSize="16sp"
+        android:backgroundTint="#CBB4F5"
+        android:textColor="@color/black" />
+
+</LinearLayout>

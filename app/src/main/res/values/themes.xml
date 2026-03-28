@@ -1,0 +1,20 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.Androidhack" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">#7C4DFF</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorSecondaryContainer">#F0EBFF</item>
+        <item name="colorOnSecondaryContainer">#7C4DFF</item>
+    </style>
+
+    <style name="Theme.Androidhack" parent="Base.Theme.Androidhack" />
+
+    <!-- Floating bottom nav wrapper card style -->
+    <style name="BottomNavCard">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginHorizontal">16dp</item>
+        <item name="android:layout_marginBottom">12dp</item>
+    </style>
+
+</resources>

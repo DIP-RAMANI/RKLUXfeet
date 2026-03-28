@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "26109313638",
+    "project_id": "rkluxfeet",
+    "storage_bucket": "rkluxfeet.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:26109313638:android:97af93feab749abcbda3a7",
+        "android_client_info": {
+          "package_name": "com.example.androidhack"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "26109313638-88nd8lr46dtjnp2m4f6r0dduj6dkuhp8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.androidhack",
+            "certificate_hash": "aa80d278fae0b0d4353cfa97ae4b59e21c57eefa"
+          }
+        },
+        {
+          "client_id": "26109313638-k4cruuolcltkvelppk8f7sc7irvn4baa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCbGZW1os1SviAKrBYqOhBRnYhfCBSL5kU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "26109313638-k4cruuolcltkvelppk8f7sc7irvn4baa.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
