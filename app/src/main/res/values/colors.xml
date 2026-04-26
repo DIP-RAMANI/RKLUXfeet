@@ -4,36 +4,25 @@
     <color name="white">#FFFFFFFF</color>
 
     <!-- RKLUXfeet Brand Colors -->
-    <color name="colorPrimary">#F5C518</color>
-    <color name="colorPrimaryDark">#D4A800</color>
-    <color name="colorAccent">#F5C518</color>
-
-    <color name="colorBackground">#FAFAFA</color>
+    <color name="colorPrimary">#7C4DFF</color>
     <color name="colorSurface">#FFFFFF</color>
     <color name="colorInputBg">#F0F0F0</color>
-    <color name="colorInputBgFocused">#E8E8E8</color>
-
     <color name="colorTextPrimary">#1A1A1A</color>
     <color name="colorTextSecondary">#666666</color>
     <color name="colorTextHint">#AAAAAA</color>
-    <color name="colorTextLink">#1A1A1A</color>
-
-    <color name="colorDivider">#E0E0E0</color>
     <color name="colorError">#D32F2F</color>
-    <color name="colorSuccess">#388E3C</color>
-
     <color name="colorButtonText">#1A1A1A</color>
     <color name="colorButtonSecondaryBg">#FFFFFF</color>
     <color name="colorButtonSecondaryBorder">#DDDDDD</color>
 
-    <!-- Profile Redesign Colors -->
-    <color name="profilePrimary">#7C4DFF</color> <!-- Soft Violet -->
+    <!-- Profile Colors -->
+    <color name="profilePrimary">#7C4DFF</color>
     <color name="profileBg">#F5F5F5</color>
     <color name="profileRed">#FF3B30</color>
 
-    <!-- Home Redesign Colors -->
-    <color name="homeGradientStart">#D1C4E9</color> <!-- Lavender Light -->
-    <color name="homeGradientEnd">#B39DDB</color> <!-- Lavender Dark -->
+    <!-- Home Colors -->
+    <color name="homeGradientStart">#D1C4E9</color>
+    <color name="homeGradientEnd">#B39DDB</color>
     <color name="homePastelPurple">#E1BEE7</color>
     <color name="homePastelPink">#FFCDD2</color>
     <color name="homePastelGreen">#C8E6C9</color>

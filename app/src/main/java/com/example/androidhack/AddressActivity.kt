@@ -79,30 +79,35 @@ class AddressActivity : AppCompatActivity() {
     private fun showAddAddressDialog() {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_address, null)
         val dialog = AlertDialog.Builder(this)
-            .setTitle("Add New Address")
             .setView(dialogView)
-            .setPositiveButton("Save", null) // override below
-            .setNegativeButton("Cancel", null)
             .create()
 
-        dialog.setOnShowListener {
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-                val label       = dialogView.findViewById<TextInputEditText>(R.id.etAddressLabel).text.toString().trim()
-                val fullName    = dialogView.findViewById<TextInputEditText>(R.id.etAddressFullName).text.toString().trim()
-                val addressLine = dialogView.findViewById<TextInputEditText>(R.id.etAddressLine).text.toString().trim()
-                val city        = dialogView.findViewById<TextInputEditText>(R.id.etAddressCity).text.toString().trim()
-                val pincode     = dialogView.findViewById<TextInputEditText>(R.id.etAddressPincode).text.toString().trim()
-                val phone       = dialogView.findViewById<TextInputEditText>(R.id.etAddressPhone).text.toString().trim()
+        // Transparent background so our custom rounded card shows cleanly
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
-                if (label.isEmpty() || fullName.isEmpty() || addressLine.isEmpty() || city.isEmpty() || pincode.isEmpty() || phone.isEmpty()) {
-                    Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
-                    return@setOnClickListener
-                }
-
-                saveAddress(label, fullName, addressLine, city, pincode, phone)
-                dialog.dismiss()
-            }
+        // Wire Cancel button
+        dialogView.findViewById<Button>(R.id.btnCancelAddress).setOnClickListener {
+            dialog.dismiss()
         }
+
+        // Wire Save button
+        dialogView.findViewById<Button>(R.id.btnSaveAddress).setOnClickListener {
+            val label       = dialogView.findViewById<TextInputEditText>(R.id.etAddressLabel).text.toString().trim()
+            val fullName    = dialogView.findViewById<TextInputEditText>(R.id.etAddressFullName).text.toString().trim()
+            val addressLine = dialogView.findViewById<TextInputEditText>(R.id.etAddressLine).text.toString().trim()
+            val city        = dialogView.findViewById<TextInputEditText>(R.id.etAddressCity).text.toString().trim()
+            val pincode     = dialogView.findViewById<TextInputEditText>(R.id.etAddressPincode).text.toString().trim()
+            val phone       = dialogView.findViewById<TextInputEditText>(R.id.etAddressPhone).text.toString().trim()
+
+            if (label.isEmpty() || fullName.isEmpty() || addressLine.isEmpty() || city.isEmpty() || pincode.isEmpty() || phone.isEmpty()) {
+                Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            saveAddress(label, fullName, addressLine, city, pincode, phone)
+            dialog.dismiss()
+        }
+
         dialog.show()
     }
 

@@ -29,6 +29,16 @@ class CheckoutActivity : AppCompatActivity(), PaymentResultListener {
     private lateinit var tvTaxes: TextView
     private lateinit var tvTotal: TextView
 
+    private lateinit var rvAvailablePromos: androidx.recyclerview.widget.RecyclerView
+    private lateinit var etPromoCode: TextInputEditText
+    private lateinit var btnApplyPromo: Button
+    private lateinit var rlDiscount: android.widget.RelativeLayout
+    private lateinit var tvCheckoutDiscount: TextView
+
+    private var availablePromos = mutableListOf<com.example.androidhack.models.PromoCode>()
+    private var appliedPromo: com.example.androidhack.models.PromoCode? = null
+    private var actualDiscountAmount: Double = 0.0
+
     private lateinit var etFullName: TextInputEditText
     private lateinit var etAddress: TextInputEditText
     private lateinit var etCity: TextInputEditText
@@ -58,6 +68,19 @@ class CheckoutActivity : AppCompatActivity(), PaymentResultListener {
         tvTaxes = findViewById(R.id.tvCheckoutTaxes)
         tvTotal = findViewById(R.id.tvCheckoutTotal)
 
+        rvAvailablePromos = findViewById(R.id.rvAvailablePromos)
+        etPromoCode = findViewById(R.id.etPromoCode)
+        btnApplyPromo = findViewById(R.id.btnApplyPromo)
+        rlDiscount = findViewById(R.id.rlDiscount)
+        tvCheckoutDiscount = findViewById(R.id.tvCheckoutDiscount)
+
+        rvAvailablePromos.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this, androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL, false)
+
+        btnApplyPromo.setOnClickListener {
+            val code = etPromoCode.text.toString().trim().uppercase()
+            checkAndApplyPromo(code)
+        }
+
         etFullName = findViewById(R.id.etFullName)
         etAddress = findViewById(R.id.etAddress)
         etCity = findViewById(R.id.etCity)
@@ -75,6 +98,7 @@ class CheckoutActivity : AppCompatActivity(), PaymentResultListener {
 
         loadCartItems()
         autoFillSavedAddress()
+        loadActivePromos()
     }
 
     private fun loadCartItems() {
@@ -91,7 +115,8 @@ class CheckoutActivity : AppCompatActivity(), PaymentResultListener {
                         name = doc.getString("name") ?: "",
                         price = doc.getString("price") ?: "0",
                         imageUrl = doc.getString("imageUrl") ?: "",
-                        quantity = doc.getLong("quantity") ?: 1L
+                        quantity = doc.getLong("quantity") ?: 1L,
+                        size = doc.getString("size") ?: ""
                     )
                     cartItems.add(item)
                 }
@@ -112,8 +137,26 @@ class CheckoutActivity : AppCompatActivity(), PaymentResultListener {
             totalItems += item.quantity
         }
 
-        val taxes = subtotal * 0.05
-        grandTotal = subtotal + taxes
+        actualDiscountAmount = 0.0
+        val promo = appliedPromo
+        if (promo != null) {
+            if (promo.type == "Percentage") {
+                actualDiscountAmount = (subtotal * promo.value) / 100.0
+            } else {
+                actualDiscountAmount = promo.value
+            }
+            if (actualDiscountAmount > subtotal) {
+                actualDiscountAmount = subtotal
+            }
+            rlDiscount.visibility = android.view.View.VISIBLE
+            tvCheckoutDiscount.text = "-₹${actualDiscountAmount.toInt()}"
+        } else {
+            rlDiscount.visibility = android.view.View.GONE
+        }
+
+        val afterDiscount = subtotal - actualDiscountAmount
+        val taxes = afterDiscount * 0.05
+        grandTotal = afterDiscount + taxes
 
         tvItemsCount.text = "Items ($totalItems)"
         tvSubtotal.text = "₹${subtotal.toInt()}"
@@ -167,37 +210,52 @@ class CheckoutActivity : AppCompatActivity(), PaymentResultListener {
             else -> "COD"
         }
 
-        val orderId = UUID.randomUUID().toString()
-        val itemsMap = cartItems.map {
-            mapOf(
-                "id" to it.id,
-                "name" to it.name,
-                "price" to it.price,
-                "imageUrl" to it.imageUrl,
-                "quantity" to it.quantity
+        pendingOrderId = null
+        pendingOrderData = null
+
+        // Count existing orders to generate a sequential short ID like RKLUX001
+        db.collection("orders").get().addOnSuccessListener { snapshot ->
+            val nextNum   = snapshot.size() + 1
+            val shortId   = "RKLUX" + nextNum.toString().padStart(3, '0')
+            val orderId   = java.util.UUID.randomUUID().toString()
+
+            val itemsMap = cartItems.map {
+                mapOf(
+                    "id"       to it.id,
+                    "name"     to it.name,
+                    "price"    to it.price,
+                    "imageUrl" to it.imageUrl,
+                    "quantity" to it.quantity,
+                    "size"     to it.size
+                )
+            }
+
+            val orderData = hashMapOf(
+                "orderId"          to orderId,
+                "shortOrderId"     to shortId,
+                "userId"           to (uid ?: "guest"),
+                "customerName"     to name,
+                "address"          to "$addressLine, $city - $pincode",
+                "phone"            to phone,
+                "paymentMethod"    to paymentMethod,
+                "status"           to "Pending",
+                "totalAmount"      to grandTotal,
+                "appliedPromoCode" to (appliedPromo?.code ?: ""),
+                "discountAmount"   to actualDiscountAmount,
+                "items"            to itemsMap,
+                "createdAt"        to com.google.firebase.Timestamp.now()
             )
-        }
 
-        val orderData = hashMapOf(
-            "orderId" to orderId,
-            "userId" to (uid ?: "guest"),
-            "customerName" to name,
-            "address" to "$addressLine, $city - $pincode",
-            "phone" to phone,
-            "paymentMethod" to paymentMethod,
-            "status" to "Pending",
-            "totalAmount" to grandTotal,
-            "items" to itemsMap,
-            "createdAt" to com.google.firebase.Timestamp.now()
-        )
+            pendingOrderId   = orderId
+            pendingOrderData = orderData
 
-        pendingOrderId = orderId
-        pendingOrderData = orderData
-
-        if (paymentMethod == "COD") {
-            saveOrderToFirestore()
-        } else {
-            startRazorpayCheckout(name, phone, auth.currentUser?.email ?: "guest@example.com")
+            if (paymentMethod == "COD") {
+                saveOrderToFirestore()
+            } else {
+                startRazorpayCheckout(name, phone, auth.currentUser?.email ?: "guest@example.com")
+            }
+        }.addOnFailureListener {
+            Toast.makeText(this, "Failed to place order. Try again.", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -277,5 +335,76 @@ class CheckoutActivity : AppCompatActivity(), PaymentResultListener {
         intent.putExtra("orderId", orderId)
         startActivity(intent)
         finish()
+    }
+
+    private fun loadActivePromos() {
+        db.collection("promocodes")
+            .whereEqualTo("isActive", true)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                availablePromos.clear()
+                for (doc in snapshot.documents) {
+                    val code = doc.getString("code") ?: ""
+                    val type = doc.getString("type") ?: "Percentage"
+                    val value = doc.getDouble("value") ?: 0.0
+                    val isActive = doc.getBoolean("isActive") ?: true
+                    availablePromos.add(com.example.androidhack.models.PromoCode(doc.id, code, type, value, isActive))
+                }
+                rvAvailablePromos.adapter = AvailablePromoAdapter(availablePromos) { clickedCode ->
+                    etPromoCode.setText(clickedCode)
+                }
+            }
+    }
+
+    private fun checkAndApplyPromo(codeInput: String) {
+        if (codeInput.isEmpty()) {
+            appliedPromo = null
+            updateTotals()
+            Toast.makeText(this, "Promo code removed", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val match = availablePromos.find { it.code.trim().equals(codeInput.trim(), ignoreCase = true) }
+        if (match != null) {
+            appliedPromo = match
+            updateTotals()
+            Toast.makeText(this, "Promo code '${match.code}' applied!", Toast.LENGTH_SHORT).show()
+        } else {
+            appliedPromo = null
+            updateTotals()
+            Toast.makeText(this, "Invalid promo code", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    // Inner Adapter
+    inner class AvailablePromoAdapter(
+        private val list: List<com.example.androidhack.models.PromoCode>,
+        private val onClick: (String) -> Unit
+    ) : androidx.recyclerview.widget.RecyclerView.Adapter<AvailablePromoAdapter.PromoViewHolder>() {
+
+        inner class PromoViewHolder(view: android.view.View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(view) {
+            val tvCode: TextView = view.findViewById(R.id.tvChipPromoCode)
+            val tvValue: TextView = view.findViewById(R.id.tvChipPromoValue)
+        }
+
+        override fun onCreateViewHolder(parent: android.view.ViewGroup, viewType: Int): PromoViewHolder {
+            val view = android.view.LayoutInflater.from(parent.context).inflate(R.layout.item_available_promo, parent, false)
+            return PromoViewHolder(view)
+        }
+
+        override fun onBindViewHolder(holder: PromoViewHolder, position: Int) {
+            val promo = list[position]
+            holder.tvCode.text = promo.code
+            if (promo.type == "Percentage") {
+                holder.tvValue.text = " (${promo.value.toInt()}% OFF)"
+            } else {
+                holder.tvValue.text = " (₹${promo.value.toInt()} OFF)"
+            }
+            holder.itemView.setOnClickListener {
+                onClick(promo.code)
+            }
+        }
+
+        override fun getItemCount() = list.size
     }
 }

@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
+import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -48,7 +49,7 @@ class ProfileActivity : AppCompatActivity() {
             imagePicker.launch("image/*")
         }
 
-        val bottomNav = findViewById<com.google.android.material.tabs.TabLayout>(R.id.bottomNavigation)
+        val bottomNav = findViewById<com.ismaeldivita.chipnavigation.ChipNavigationBar>(R.id.bottomNavigation)
         val llAddProduct = findViewById<View>(R.id.llAddProduct)
 
         // Hide Admin Panel by default until role is verified from Firestore
@@ -91,34 +92,38 @@ class ProfileActivity : AppCompatActivity() {
         }
 
         findViewById<View>(R.id.llSignOut).setOnClickListener {
-            auth.signOut()
-            val intent = Intent(this, LoginActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
+            // Clear Google Sign-In cache so account chooser shows up next time
+            val gso = com.google.android.gms.auth.api.signin.GoogleSignInOptions.Builder(com.google.android.gms.auth.api.signin.GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build()
+            
+            com.google.android.gms.auth.api.signin.GoogleSignIn.getClient(this, gso).signOut().addOnCompleteListener {
+                auth.signOut()
+                val intent = Intent(this, LoginActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+            }
         }
 
         // Setup Bottom Nav
-        bottomNav.getTabAt(3)?.select()
-        bottomNav.addOnTabSelectedListener(object : com.google.android.material.tabs.TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: com.google.android.material.tabs.TabLayout.Tab?) {
-                if (tab?.position == 3) return
-                val intent = when (tab?.position) {
-                    0 -> Intent(this@ProfileActivity, HomeActivity::class.java)
-                    1 -> Intent(this@ProfileActivity, StoreActivity::class.java)
-                    2 -> Intent(this@ProfileActivity, WishlistActivity::class.java)
-                    else -> null
-                }
-                intent?.let {
-                    android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
-                        startActivity(it)
-                        overridePendingTransition(0, 0)
-                        finish()
-                    }, 150)
-                }
+        bottomNav.setItemSelected(R.id.nav_profile, true)
+        bottomNav.setOnItemSelectedListener { id ->
+            if (id == R.id.nav_profile) return@setOnItemSelectedListener
+            val intent = when (id) {
+                R.id.nav_home -> Intent(this@ProfileActivity, HomeActivity::class.java)
+                R.id.nav_shop -> Intent(this@ProfileActivity, StoreActivity::class.java)
+                R.id.nav_wishlist -> Intent(this@ProfileActivity, WishlistActivity::class.java)
+                else -> null
             }
-            override fun onTabUnselected(tab: com.google.android.material.tabs.TabLayout.Tab?) {}
-            override fun onTabReselected(tab: com.google.android.material.tabs.TabLayout.Tab?) {}
-        })
+            intent?.let {
+                android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+                    startActivity(it)
+                    overridePendingTransition(0, 0)
+                    finish()
+                }, 150)
+            }
+        }
     }
 
     override fun onResume() {
@@ -143,7 +148,7 @@ class ProfileActivity : AppCompatActivity() {
                 }
 
                 if (profileImageUrl.isNotEmpty()) {
-                    Glide.with(this).load(profileImageUrl).centerCrop().into(ivProfilePic)
+                    Glide.with(this).load(profileImageUrl.optimizeCloudinaryUrl()).centerCrop().into(ivProfilePic)
                 }
             } else {
                 tvName.text = auth.currentUser?.displayName ?: "No Name"

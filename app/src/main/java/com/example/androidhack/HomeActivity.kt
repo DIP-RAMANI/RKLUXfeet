@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ScrollView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
@@ -25,6 +26,7 @@ class HomeActivity : AppCompatActivity() {
         val name: String = "",
         val price: String = "",
         val imageUrl: String = "",
+        val imageUrls: List<String> = emptyList(),
         val description: String = "",
         val specifications: String = ""
     )
@@ -54,9 +56,37 @@ class HomeActivity : AppCompatActivity() {
 
         val rvNewArrivals = findViewById<RecyclerView>(R.id.rvNewArrivals)
         val rvBestsellers = findViewById<RecyclerView>(R.id.rvBestsellers)
-        val bottomNav     = findViewById<com.google.android.material.tabs.TabLayout>(R.id.bottomNavigation)
+        val bottomNav     = findViewById<com.ismaeldivita.chipnavigation.ChipNavigationBar>(R.id.bottomNavigation)
         vpBanner          = findViewById(R.id.vpBanner)
         llBannerDots      = findViewById(R.id.llBannerDots)
+
+        // ---- User greeting + avatar ----
+        val tvGreeting      = findViewById<TextView>(R.id.tvGreeting)
+        val ivUserAvatar    = findViewById<ImageView>(R.id.ivUserAvatar)
+        val tvAvatarInitial = findViewById<TextView>(R.id.tvAvatarInitial)
+        val currentUser     = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
+        val displayName     = currentUser?.displayName?.split(" ")?.firstOrNull() ?: "User"
+        tvGreeting.text = "Hi, $displayName 👋"
+
+        // Always show initial letter by default (XML already sets visible)
+        tvAvatarInitial.text = displayName.firstOrNull()?.uppercaseChar()?.toString() ?: "U"
+
+        // If user has a Google/Facebook photo, load it and hide the initial
+        val photoUri = currentUser?.photoUrl
+        if (photoUri != null) {
+            ivUserAvatar.visibility    = android.view.View.VISIBLE
+            tvAvatarInitial.visibility = android.view.View.GONE
+            Glide.with(this)
+                .load(photoUri)
+                .circleCrop()
+                .placeholder(R.drawable.ic_profile)
+                .into(ivUserAvatar)
+        }
+
+        // Avatar tap → Profile
+        findViewById<androidx.cardview.widget.CardView>(R.id.cvAvatar).setOnClickListener {
+            startActivity(Intent(this, ProfileActivity::class.java))
+        }
 
         // Setup Banner Slider
         vpBanner.adapter = BannerAdapter(bannerImages)
@@ -70,12 +100,13 @@ class HomeActivity : AppCompatActivity() {
             }
         })
 
-        findViewById<ImageView>(R.id.ivCart).setOnClickListener {
+        // Cart button is now a CardView
+        findViewById<androidx.cardview.widget.CardView>(R.id.ivCart).setOnClickListener {
             startActivity(Intent(this, CartActivity::class.java))
         }
 
         // Tap on Search bar -> Go to Store
-        findViewById<View>(R.id.cvSearch).setOnClickListener {
+        findViewById<android.view.View>(R.id.cvSearch).setOnClickListener {
             startActivity(Intent(this, StoreActivity::class.java))
         }
 
@@ -98,6 +129,7 @@ class HomeActivity : AppCompatActivity() {
                 putExtra("productName",   shoe.name)
                 putExtra("productPrice",  shoe.price)
                 putExtra("productImage",  shoe.imageUrl)
+                putStringArrayListExtra("productImageUrls", ArrayList(shoe.imageUrls.ifEmpty { listOf(shoe.imageUrl) }))
                 putExtra("productDesc",   shoe.description)
                 putExtra("productSpecs",  shoe.specifications)
             }
@@ -114,11 +146,14 @@ class HomeActivity : AppCompatActivity() {
             .addSnapshotListener { snapshot, _ ->
                 if (snapshot != null && !snapshot.isEmpty) {
                     val allShoes = snapshot.documents.map { doc ->
+                        val urls = (doc.get("imageUrls") as? List<*>)?.filterIsInstance<String>() ?: emptyList()
+                        val primary = doc.getString("imageUrl") ?: ""
                         Shoe(
                             id             = doc.id,
                             name           = doc.getString("name") ?: "",
                             price          = doc.getString("price") ?: "",
-                            imageUrl       = doc.getString("imageUrl") ?: "",
+                            imageUrl       = primary,
+                            imageUrls      = urls.ifEmpty { if (primary.isNotEmpty()) listOf(primary) else emptyList() },
                             description    = doc.getString("description") ?: "",
                             specifications = doc.getString("specifications") ?: ""
                         )
@@ -140,26 +175,22 @@ class HomeActivity : AppCompatActivity() {
             }
 
         // Bottom nav
-        bottomNav.getTabAt(0)?.select()
-        bottomNav.addOnTabSelectedListener(object : com.google.android.material.tabs.TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: com.google.android.material.tabs.TabLayout.Tab?) {
-                if (tab?.position == 0) return
-                val intent = when (tab?.position) {
-                    1 -> Intent(this@HomeActivity, StoreActivity::class.java)
-                    2 -> Intent(this@HomeActivity, WishlistActivity::class.java)
-                    3 -> Intent(this@HomeActivity, ProfileActivity::class.java)
-                    else -> null
-                }
-                intent?.let {
-                    android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
-                        startActivity(it)
-                        overridePendingTransition(0, 0)
-                    }, 150)
-                }
+        bottomNav.setItemSelected(R.id.nav_home, true)
+        bottomNav.setOnItemSelectedListener { id ->
+            if (id == R.id.nav_home) return@setOnItemSelectedListener
+            val intent = when (id) {
+                R.id.nav_shop -> Intent(this@HomeActivity, StoreActivity::class.java)
+                R.id.nav_wishlist -> Intent(this@HomeActivity, WishlistActivity::class.java)
+                R.id.nav_profile -> Intent(this@HomeActivity, ProfileActivity::class.java)
+                else -> null
             }
-            override fun onTabUnselected(tab: com.google.android.material.tabs.TabLayout.Tab?) {}
-            override fun onTabReselected(tab: com.google.android.material.tabs.TabLayout.Tab?) {}
-        })
+            intent?.let {
+                android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+                    startActivity(it)
+                    overridePendingTransition(0, 0)
+                }, 150)
+            }
+        }
     }
 
     override fun onDestroy() {
@@ -176,7 +207,7 @@ class HomeActivity : AppCompatActivity() {
         val uid = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid ?: return
         val tvCartBadge = findViewById<android.widget.TextView>(R.id.tvCartBadge)
         com.google.firebase.firestore.FirebaseFirestore.getInstance()
-            .collection("users").document(uid).collection("cart")
+            .collection("carts").document(uid).collection("items")
             .get()
             .addOnSuccessListener { snapshot ->
                 val count = snapshot.size()
@@ -261,7 +292,7 @@ class HomeActivity : AppCompatActivity() {
             holder.tvPrice.text = "₹${shoe.price.replace("₹", "").trim()}"
             
             Glide.with(holder.itemView.context)
-                .load(shoe.imageUrl)
+                .load(shoe.imageUrl.optimizeCloudinaryUrl())
                 .placeholder(R.drawable.shoesgreen3)
                 .error(R.drawable.shoesgreen3)
                 .centerCrop()

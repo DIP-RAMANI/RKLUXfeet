@@ -27,6 +27,7 @@
     </RelativeLayout>
 
     <ScrollView
+        android:id="@+id/svProfileMain"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:clipToPadding="false"
@@ -119,21 +120,21 @@
                     <LinearLayout android:id="@+id/llPersonalInfo" style="@style/ProfileMenuItem">
                         <ImageView android:src="@drawable/ic_person" style="@style/ProfileMenuIcon" app:tint="#757575"/>
                         <TextView android:text="Personal Information" style="@style/ProfileMenuText" />
-                        <ImageView android:src="@drawable/ic_chevron_right" style="@style/ProfileMenuIconRight" app:tint="#BDBDBD"/>
+                        <ImageView android:src="@drawable/ic_chevron_right" style="@style/ProfileMenuIconRight" app:tint="#757575"/>
                     </LinearLayout>
-                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0" android:layout_marginStart="56dp"/>
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F5F5F5" android:layout_marginStart="56dp"/>
 
                     <LinearLayout android:id="@+id/llAddress" style="@style/ProfileMenuItem">
                         <ImageView android:src="@drawable/ic_location" style="@style/ProfileMenuIcon" app:tint="#757575"/>
                         <TextView android:text="Address" style="@style/ProfileMenuText" />
-                        <ImageView android:src="@drawable/ic_chevron_right" style="@style/ProfileMenuIconRight" app:tint="#BDBDBD"/>
+                        <ImageView android:src="@drawable/ic_chevron_right" style="@style/ProfileMenuIconRight" app:tint="#757575"/>
                     </LinearLayout>
-                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0" android:layout_marginStart="56dp"/>
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F5F5F5" android:layout_marginStart="56dp"/>
 
                     <LinearLayout android:id="@+id/llOrderHistory" style="@style/ProfileMenuItem">
                         <ImageView android:src="@drawable/ic_package" style="@style/ProfileMenuIcon" app:tint="#757575"/>
                         <TextView android:text="Order History" style="@style/ProfileMenuText" />
-                        <ImageView android:src="@drawable/ic_chevron_right" style="@style/ProfileMenuIconRight" app:tint="#BDBDBD"/>
+                        <ImageView android:src="@drawable/ic_chevron_right" style="@style/ProfileMenuIconRight" app:tint="#757575"/>
                     </LinearLayout>
 
 
@@ -167,23 +168,23 @@
                     <LinearLayout android:id="@+id/llAppSettings" style="@style/ProfileMenuItem">
                         <ImageView android:src="@drawable/ic_settings" style="@style/ProfileMenuIcon" app:tint="#757575"/>
                         <TextView android:text="App Permissions" style="@style/ProfileMenuText" />
-                        <ImageView android:src="@drawable/ic_chevron_right" style="@style/ProfileMenuIconRight" app:tint="#BDBDBD"/>
+                        <ImageView android:src="@drawable/ic_chevron_right" style="@style/ProfileMenuIconRight" app:tint="#757575"/>
                     </LinearLayout>
-                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0" android:layout_marginStart="56dp"/>
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F5F5F5" android:layout_marginStart="56dp"/>
 
                     <LinearLayout android:id="@+id/llAddProduct" style="@style/ProfileMenuItem">
                         <ImageView android:src="@drawable/ic_package" style="@style/ProfileMenuIcon" app:tint="#757575"/>
                         <TextView android:text="Admin: Add Product" style="@style/ProfileMenuText" />
-                        <ImageView android:src="@drawable/ic_chevron_right" style="@style/ProfileMenuIconRight" app:tint="#BDBDBD"/>
+                        <ImageView android:src="@drawable/ic_chevron_right" style="@style/ProfileMenuIconRight" app:tint="#757575"/>
                     </LinearLayout>
-                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0" android:layout_marginStart="56dp"/>
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F5F5F5" android:layout_marginStart="56dp"/>
 
                     <LinearLayout android:id="@+id/llContactSupport" style="@style/ProfileMenuItem">
                         <ImageView android:src="@drawable/ic_help" style="@style/ProfileMenuIcon" app:tint="#757575"/>
                         <TextView android:text="Contact Support" style="@style/ProfileMenuText" />
-                        <ImageView android:src="@drawable/ic_chevron_right" style="@style/ProfileMenuIconRight" app:tint="#BDBDBD"/>
+                        <ImageView android:src="@drawable/ic_chevron_right" style="@style/ProfileMenuIconRight" app:tint="#757575"/>
                     </LinearLayout>
-                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0" android:layout_marginStart="56dp"/>
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F5F5F5" android:layout_marginStart="56dp"/>
 
                     <LinearLayout android:id="@+id/llSignOut" style="@style/ProfileMenuItem">
                         <ImageView android:src="@drawable/ic_logout" style="@style/ProfileMenuIcon" app:tint="@color/profileRed"/>
@@ -196,30 +197,19 @@
         </LinearLayout>
     </ScrollView>
 
-    <com.google.android.material.tabs.TabLayout
+    <com.ismaeldivita.chipnavigation.ChipNavigationBar
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
         android:layout_height="64dp"
         android:layout_marginHorizontal="24dp"
         android:layout_marginBottom="24dp"
-        android:background="@drawable/bg_bottom_nav_dark"
-        app:tabIndicator="@drawable/tab_indicator_dash"
-        app:tabIndicatorGravity="top"
-        app:tabIconTint="@color/tab_icon_color"
-        app:tabRippleColor="@android:color/transparent"
+        android:background="@drawable/bg_bottom_nav_light"
+        app:elevation="12dp"
+        app:cnb_menuResource="@menu/bottom_nav_menu"
+        app:cnb_orientationMode="horizontal"
+        app:cnb_unselectedColor="@color/tab_icon_color"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:elevation="12dp">
-
-        <com.google.android.material.tabs.TabItem
-            android:icon="@drawable/ic_home" />
-        <com.google.android.material.tabs.TabItem
-            android:icon="@drawable/ic_shop" />
-        <com.google.android.material.tabs.TabItem
-            android:icon="@drawable/ic_wishlist" />
-        <com.google.android.material.tabs.TabItem
-            android:icon="@drawable/ic_profile" />
-    </com.google.android.material.tabs.TabLayout>
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

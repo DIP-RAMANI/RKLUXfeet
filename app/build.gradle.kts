@@ -67,4 +67,7 @@ dependencies {
 
     // Razorpay Integration
     implementation("com.razorpay:checkout:1.6.39")
+
+    // Animated Chip Navigation Bar
+    implementation("com.github.ismaeldivita:chip-navigation-bar:1.4.0")
 }

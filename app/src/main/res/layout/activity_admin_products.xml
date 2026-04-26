@@ -4,77 +4,92 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F5F5"
+    android:background="#F8F7FF"
     tools:context=".AdminProductsActivity">
 
-    <!-- Header Frame -->
+    <!-- Header -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/clProductsHeader"
         android:layout_width="match_parent"
-        android:layout_height="140dp"
-        android:background="@drawable/bg_home_header"
+        android:layout_height="130dp"
+        android:background="#7C4DFF"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/ivProductsBack"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="32dp"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="40dp"
             android:src="@drawable/ic_arrow_back"
-            app:tint="#000000"
+            app:tint="#FFFFFF"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/tvProductsTitle"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:fontFamily="sans-serif-black"
-            android:text="Manage Products"
-            android:textColor="#000000"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@id/ivProductsBack"
+            android:orientation="vertical"
+            android:layout_marginStart="12dp"
             app:layout_constraintStart_toEndOf="@id/ivProductsBack"
-            app:layout_constraintTop_toTopOf="@id/ivProductsBack" />
+            app:layout_constraintTop_toTopOf="@id/ivProductsBack"
+            app:layout_constraintBottom_toBottomOf="@id/ivProductsBack"
+            app:layout_constraintEnd_toStartOf="@id/tvAddProduct">
+
+            <TextView
+                android:id="@+id/tvProductsTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Manage Products"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-black" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Add, edit or remove listings"
+                android:textColor="#E8E0FF"
+                android:textSize="12sp" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/tvAddProduct"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="20dp"
+            android:layout_height="36dp"
+            android:layout_marginEnd="16dp"
             android:text="+ Add"
-            android:textColor="#2E7D32"
-            android:textSize="16sp"
+            android:gravity="center"
+            android:textColor="#7C4DFF"
+            android:textSize="13sp"
             android:textStyle="bold"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:background="@drawable/bg_chip_inactive"
+            android:paddingHorizontal="16dp"
             android:clickable="true"
             android:focusable="true"
-            android:paddingHorizontal="4dp"
-            android:paddingVertical="2dp"
             app:layout_constraintBottom_toBottomOf="@id/ivProductsBack"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/ivProductsBack" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Search Bar -->
+    <!-- Floating Search Bar -->
     <androidx.cardview.widget.CardView
         android:id="@+id/cvProductsSearch"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_width="0dp"
+        android:layout_height="52dp"
         android:layout_marginHorizontal="20dp"
-        app:cardCornerRadius="25dp"
-        app:cardElevation="4dp"
+        android:layout_marginTop="-26dp"
+        app:cardCornerRadius="26dp"
+        app:cardElevation="8dp"
         app:cardBackgroundColor="#FFFFFF"
         app:layout_constraintTop_toBottomOf="@id/clProductsHeader"
-        android:layout_marginTop="-25dp">
-        
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -85,15 +100,15 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@drawable/ic_search"
-                app:tint="#8D8D8D"/>
+                app:tint="#7C4DFF" />
             <EditText
                 android:id="@+id/etProductsSearch"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@null"
                 android:hint="Search products..."
-                android:textColor="#000000"
-                android:textColorHint="#8D8D8D"
+                android:textColor="#212121"
+                android:textColorHint="#9E9E9E"
                 android:textSize="14sp"
                 android:layout_marginStart="10dp"
                 android:singleLine="true"

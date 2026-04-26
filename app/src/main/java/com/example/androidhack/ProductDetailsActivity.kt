@@ -1,13 +1,20 @@
 package com.example.androidhack
 
 import android.content.Intent
+import android.graphics.Color
 import android.graphics.Paint
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -41,6 +48,11 @@ class ProductDetailsActivity : AppCompatActivity() {
             val productDesc  = intent.getStringExtra("productDesc") ?: "No description available."
             val productSpecs = intent.getStringExtra("productSpecs") ?: "No specifications available."
 
+            // Multi-image list: prefer imageUrls, fall back to single productImage
+            val imageUrls: ArrayList<String> =
+                intent.getStringArrayListExtra("productImageUrls")
+                    ?: if (productImage.isNotEmpty()) arrayListOf(productImage) else arrayListOf()
+
             if (productId.isEmpty()) {
                 Toast.makeText(this, "Error: Product ID is missing!", Toast.LENGTH_LONG).show()
                 finish()
@@ -63,15 +75,15 @@ class ProductDetailsActivity : AppCompatActivity() {
                 val originalPrice = (numericPrice * 1.2).toInt()
                 tvOriginal.text = "₹$originalPrice"
                 tvOriginal.paintFlags = tvOriginal.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-                tvOriginal.visibility = android.view.View.VISIBLE
+                tvOriginal.visibility = View.VISIBLE
 
                 // Show discount badge
                 val discountPct = (((originalPrice - numericPrice) / originalPrice) * 100).toInt()
                 val tvDiscount = findViewById<TextView>(R.id.tvDiscount)
                 tvDiscount.text = "-${discountPct}%"
-                tvDiscount.visibility = android.view.View.VISIBLE
+                tvDiscount.visibility = View.VISIBLE
             } else {
-                tvOriginal.visibility = android.view.View.GONE
+                tvOriginal.visibility = View.GONE
             }
 
             // Specs
@@ -80,14 +92,20 @@ class ProductDetailsActivity : AppCompatActivity() {
                 tvSpecs.text = productSpecs
             }
 
-            // Product image
-            val ivProductImage = findViewById<ImageView>(R.id.ivProductImage)
-            if (productImage.isNotEmpty()) {
-                Glide.with(this)
-                    .load(productImage)
-                    .placeholder(R.drawable.shoesgreen3)
-                    .centerInside()
-                    .into(ivProductImage)
+            // ── Setup image ViewPager2 ───────────────────────────
+            val vpImages    = findViewById<ViewPager2>(R.id.vpProductImages)
+            val llDots      = findViewById<LinearLayout>(R.id.llImageDots)
+
+            if (imageUrls.isNotEmpty()) {
+                val imageAdapter = ProductImageAdapter(imageUrls)
+                vpImages.adapter = imageAdapter
+                setupImageDots(llDots, imageUrls.size)
+
+                vpImages.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+                    override fun onPageSelected(position: Int) {
+                        updateImageDots(llDots, position)
+                    }
+                })
             }
 
             // ── Wishlist Heart ───────────────────────────────────
@@ -100,7 +118,7 @@ class ProductDetailsActivity : AppCompatActivity() {
                     return@setOnClickListener
                 }
                 if (isWishlisted) removeFromWishlist(productId)
-                else addToWishlist(productId, productName, productPrice, productImage)
+                else addToWishlist(productId, productName, productPrice, imageUrls.firstOrNull() ?: "")
             }
 
             // ── Back button ──────────────────────────────────────
@@ -110,12 +128,13 @@ class ProductDetailsActivity : AppCompatActivity() {
             setupSizeSelector()
 
             // ── Add to Cart ──────────────────────────────────────
+            val firstImage = imageUrls.firstOrNull() ?: ""
             findViewById<Button>(R.id.btnAddToCart).setOnClickListener {
                 if (uid == null) {
                     Toast.makeText(this, "Please log in to add to cart", Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
-                addToCart(productId, productName, productPrice, productImage)
+                addToCart(productId, productName, productPrice, firstImage)
             }
 
             // ── Buy Now ──────────────────────────────────────────
@@ -124,13 +143,73 @@ class ProductDetailsActivity : AppCompatActivity() {
                     Toast.makeText(this, "Please log in to buy items", Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
-                addToCart(productId, productName, productPrice, productImage, navigateToCart = true)
+                addToCart(productId, productName, productPrice, firstImage, navigateToCart = true)
             }
 
         } catch (e: Exception) {
             Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_LONG).show()
             e.printStackTrace()
             finish()
+        }
+    }
+
+    // ─── Dot indicator helpers ───────────────────────────────────────────────
+    private fun setupImageDots(container: LinearLayout, count: Int) {
+        container.removeAllViews()
+        if (count <= 1) { container.visibility = View.GONE; return }
+        container.visibility = View.VISIBLE
+        for (i in 0 until count) {
+            val dot = View(this).apply {
+                val size = if (i == 0) 24 else 16
+                layoutParams = LinearLayout.LayoutParams(size, size).also {
+                    it.setMargins(6, 0, 6, 0)
+                }
+                background = android.graphics.drawable.GradientDrawable().apply {
+                    shape = android.graphics.drawable.GradientDrawable.OVAL
+                    setColor(if (i == 0) Color.parseColor("#7C4DFF") else Color.parseColor("#CCCCCC"))
+                }
+            }
+            container.addView(dot)
+        }
+    }
+
+    private fun updateImageDots(container: LinearLayout, activeIndex: Int) {
+        for (i in 0 until container.childCount) {
+            val dot = container.getChildAt(i)
+            val size = if (i == activeIndex) 24 else 16
+            dot.layoutParams = LinearLayout.LayoutParams(size, size).also {
+                it.setMargins(6, 0, 6, 0)
+            }
+            (dot.background as? android.graphics.drawable.GradientDrawable)?.setColor(
+                if (i == activeIndex) Color.parseColor("#7C4DFF") else Color.parseColor("#CCCCCC")
+            )
+        }
+    }
+
+    // ─── Product Image ViewPager2 Adapter ────────────────────────────────────
+    inner class ProductImageAdapter(private val urls: List<String>) :
+        RecyclerView.Adapter<ProductImageAdapter.ImageVH>() {
+
+        inner class ImageVH(view: View) : RecyclerView.ViewHolder(view) {
+            val iv: ImageView = view.findViewById(R.id.ivBannerSlide)
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageVH {
+            val view = LayoutInflater.from(parent.context)
+                .inflate(R.layout.item_product_image, parent, false)
+            return ImageVH(view)
+        }
+
+        override fun getItemCount() = urls.size
+
+        override fun onBindViewHolder(holder: ImageVH, position: Int) {
+            holder.iv.scaleType = ImageView.ScaleType.CENTER_CROP
+            Glide.with(holder.iv.context)
+                .load(urls[position].optimizeCloudinaryUrl())
+                .placeholder(R.drawable.shoesgreen3)
+                .error(R.drawable.shoesgreen3)
+                .centerCrop()
+                .into(holder.iv)
         }
     }
 

@@ -5,5 +5,6 @@ data class CartItem(
     val name: String = "",
     val price: String = "",
     val imageUrl: String = "",
-    val quantity: Long = 1L
+    val quantity: Long = 1L,
+    val size: String = ""
 )

@@ -122,21 +122,29 @@ class LoginActivity : AppCompatActivity() {
                 if (task.isSuccessful) {
                     val user = auth.currentUser
                     if (user != null) {
-                        val userMap = mapOf(
-                            "name" to (user.displayName ?: "No Name"),
-                            "email" to (user.email ?: ""),
-                            "profileImageUrl" to (user.photoUrl?.toString() ?: ""),
-                            "role" to "user"
-                        )
-                        com.google.firebase.firestore.FirebaseFirestore.getInstance()
-                            .collection("users").document(user.uid)
-                            .set(userMap, com.google.firebase.firestore.SetOptions.merge())
-                            .addOnCompleteListener {
-                                showToast("Google Login successful!")
-                                val intent = Intent(this, HomeActivity::class.java)
-                                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                                startActivity(intent)
-                                finish()
+                        val db = com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                        db.collection("users").document(user.uid).get()
+                            .addOnSuccessListener { doc ->
+                                val userMap = mutableMapOf<String, Any>(
+                                    "name" to (user.displayName ?: "No Name"),
+                                    "email" to (user.email ?: ""),
+                                    "profileImageUrl" to (user.photoUrl?.toString() ?: "")
+                                )
+                                if (!doc.exists()) {
+                                    userMap["role"] = "user"
+                                }
+                                db.collection("users").document(user.uid)
+                                    .set(userMap, com.google.firebase.firestore.SetOptions.merge())
+                                    .addOnCompleteListener {
+                                        showToast("Google Login successful!")
+                                        val intent = Intent(this@LoginActivity, HomeActivity::class.java)
+                                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                        startActivity(intent)
+                                        finish()
+                                    }
+                            }
+                            .addOnFailureListener {
+                                showToast("Failed to fetch user data")
                             }
                     }
                 } else {

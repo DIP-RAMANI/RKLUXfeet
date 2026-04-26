@@ -89,7 +89,8 @@ class CartActivity : AppCompatActivity() {
                             name = doc.getString("name") ?: "",
                             price = doc.getString("price") ?: "0",
                             imageUrl = doc.getString("imageUrl") ?: "",
-                            quantity = doc.getLong("quantity") ?: 1L
+                            quantity = doc.getLong("quantity") ?: 1L,
+                            size = doc.getString("size") ?: ""
                         )
                     }
                     adapter.updateData(items)
@@ -155,6 +156,7 @@ class CartActivity : AppCompatActivity() {
         class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             val tvName: TextView        = view.findViewById(R.id.tvCartItemName)
             val tvQty: TextView         = view.findViewById(R.id.tvCartItemQuantity)
+            val tvSize: TextView        = view.findViewById(R.id.tvCartItemSize)
             val tvPrice: TextView       = view.findViewById(R.id.tvCartItemPrice)
             val ivItem: ImageView       = view.findViewById(R.id.ivCartItem)
             val ivDelete: ImageView     = view.findViewById(R.id.ivDeleteCartItem)
@@ -171,13 +173,14 @@ class CartActivity : AppCompatActivity() {
             val item = items[position]
             holder.tvName.text = item.name
             holder.tvQty.text = item.quantity.toString()
+            holder.tvSize.text = "Size: ${item.size.ifEmpty { "N/A" }}"
             
             val priceNum = item.price.replace("[^\\d.]".toRegex(), "")
             holder.tvPrice.text = "₹$priceNum"
 
             if (item.imageUrl.isNotEmpty()) {
                 Glide.with(holder.itemView.context)
-                    .load(item.imageUrl)
+                    .load(item.imageUrl.optimizeCloudinaryUrl())
                     .placeholder(R.drawable.shoesgreen3)
                     .centerCrop()
                     .into(holder.ivItem)

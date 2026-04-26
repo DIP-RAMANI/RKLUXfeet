@@ -22,22 +22,21 @@
             android:orientation="vertical">
 
             <!-- ═══════════════════════════════════════════ -->
-            <!-- IMAGE AREA with floating back + heart        -->
+            <!-- IMAGE AREA with ViewPager2 + dots            -->
             <!-- ═══════════════════════════════════════════ -->
             <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="320dp"
+                android:layout_height="340dp"
                 android:background="#EDE7FF">
 
-                <ImageView
-                    android:id="@+id/ivProductImage"
+                <!-- Scrollable image pager -->
+                <androidx.viewpager2.widget.ViewPager2
+                    android:id="@+id/vpProductImages"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:padding="28dp"
-                    android:scaleType="centerInside"
-                    tools:src="@drawable/shoes021" />
+                    android:orientation="horizontal" />
 
-                <!-- Back button - floating over image -->
+                <!-- Back button - floating over pager -->
                 <ImageView
                     android:id="@+id/ivBackProduct"
                     android:layout_width="40dp"
@@ -75,6 +74,16 @@
                     android:textSize="11sp"
                     android:textStyle="bold" />
 
+                <!-- Dot indicators bottom-center -->
+                <LinearLayout
+                    android:id="@+id/llImageDots"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|center_horizontal"
+                    android:layout_marginBottom="12dp"
+                    android:orientation="horizontal"
+                    android:gravity="center" />
+
             </FrameLayout>
 
             <!-- ═══════════════════════════════════════════ -->
@@ -100,7 +109,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="Product Name"
-                        android:textColor="#1A1A1A"
+                        android:textColor="#000000"
                         android:textSize="22sp"
                         android:textStyle="bold" />
 
@@ -167,7 +176,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Select Size 👟"
-                    android:textColor="#1A1A1A"
+                    android:textColor="#000000"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
@@ -185,7 +194,7 @@
                         android:background="@drawable/bg_size_chip_unselected"
                         android:gravity="center"
                         android:text="UK 6"
-                        android:textColor="#1A1A1A"
+                        android:textColor="#000000"
                         android:textSize="13sp"
                         android:clickable="true"
                         android:focusable="true" />
@@ -212,7 +221,7 @@
                         android:background="@drawable/bg_size_chip_unselected"
                         android:gravity="center"
                         android:text="UK 8"
-                        android:textColor="#1A1A1A"
+                        android:textColor="#000000"
                         android:textSize="13sp"
                         android:clickable="true"
                         android:focusable="true" />
@@ -225,7 +234,7 @@
                         android:background="@drawable/bg_size_chip_unselected"
                         android:gravity="center"
                         android:text="UK 9"
-                        android:textColor="#1A1A1A"
+                        android:textColor="#000000"
                         android:textSize="13sp"
                         android:clickable="true"
                         android:focusable="true" />
@@ -237,7 +246,7 @@
                         android:background="@drawable/bg_size_chip_unselected"
                         android:gravity="center"
                         android:text="UK 10"
-                        android:textColor="#1A1A1A"
+                        android:textColor="#000000"
                         android:textSize="13sp"
                         android:clickable="true"
                         android:focusable="true" />
@@ -260,7 +269,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Specifications"
-                    android:textColor="#1A1A1A"
+                    android:textColor="#000000"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
@@ -291,7 +300,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Price"
-                    android:textColor="#1A1A1A"
+                    android:textColor="#000000"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
@@ -317,7 +326,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
                         android:text="₹3,499"
-                        android:textColor="#BDBDBD"
+                        android:textColor="#757575"
                         android:textSize="16sp" />
 
                     <TextView

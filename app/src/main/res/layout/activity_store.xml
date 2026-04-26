@@ -21,6 +21,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="20dp"
+        android:clipChildren="false"
+        android:clipToPadding="false"
         app:layout_constraintTop_toTopOf="parent">
         <ImageView
             android:id="@+id/ivBackStore"
@@ -45,6 +47,7 @@
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:padding="8dp"
             android:clipChildren="false"
             android:clipToPadding="false"
             android:layout_alignParentEnd="true"
@@ -97,7 +100,7 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@drawable/ic_search"
-                app:tint="#8D8D8D"/>
+                app:tint="#757575"/>
             <EditText
                 android:id="@+id/etSearch"
                 android:layout_width="match_parent"
@@ -105,7 +108,7 @@
                 android:background="@null"
                 android:hint="Search for shoes..."
                 android:textColor="#000000"
-                android:textColorHint="#8D8D8D"
+                android:textColorHint="#757575"
                 android:textSize="14sp"
                 android:layout_marginStart="10dp"
                 android:singleLine="true"
@@ -187,7 +190,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="16dp"
         android:text="3 results"
-        android:textColor="#9E9E9E"
+        android:textColor="#757575"
         android:textSize="14sp"
         app:layout_constraintTop_toBottomOf="@id/hsvBrand"
         app:layout_constraintStart_toStartOf="parent" />
@@ -206,30 +209,19 @@
         app:layout_constraintBottom_toTopOf="@id/bottomNavigation"
         tools:listitem="@layout/item_shoe_grid" />
 
-    <com.google.android.material.tabs.TabLayout
+    <com.ismaeldivita.chipnavigation.ChipNavigationBar
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
         android:layout_height="64dp"
         android:layout_marginHorizontal="24dp"
         android:layout_marginBottom="24dp"
-        android:background="@drawable/bg_bottom_nav_dark"
-        app:tabIndicator="@drawable/tab_indicator_dash"
-        app:tabIndicatorGravity="top"
-        app:tabIconTint="@color/tab_icon_color"
-        app:tabRippleColor="@android:color/transparent"
+        android:background="@drawable/bg_bottom_nav_light"
+        app:elevation="12dp"
+        app:cnb_menuResource="@menu/bottom_nav_menu"
+        app:cnb_orientationMode="horizontal"
+        app:cnb_unselectedColor="@color/tab_icon_color"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:elevation="12dp">
-
-        <com.google.android.material.tabs.TabItem
-            android:icon="@drawable/ic_home" />
-        <com.google.android.material.tabs.TabItem
-            android:icon="@drawable/ic_shop" />
-        <com.google.android.material.tabs.TabItem
-            android:icon="@drawable/ic_wishlist" />
-        <com.google.android.material.tabs.TabItem
-            android:icon="@drawable/ic_profile" />
-    </com.google.android.material.tabs.TabLayout>
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

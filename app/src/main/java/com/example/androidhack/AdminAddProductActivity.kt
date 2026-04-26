@@ -2,6 +2,7 @@ package com.example.androidhack
 
 import android.net.Uri
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
@@ -18,16 +19,24 @@ import kotlinx.coroutines.withContext
 class AdminAddProductActivity : AppCompatActivity() {
 
     private val db = FirebaseFirestore.getInstance()
-    private var selectedImageUri: Uri? = null
+
+    // Up to 4 image URIs
+    private val selectedUris = arrayOfNulls<Uri>(4)
+
+    // Track which slot is being picked (0-indexed)
+    private var activeSlot = 0
 
     private val imagePicker = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         if (uri != null) {
-            selectedImageUri = uri
-            val ivPreview = findViewById<ImageView>(R.id.ivAdminProductPreview)
-            ivPreview.visibility = android.view.View.VISIBLE
-            ivPreview.setImageURI(uri)
+            selectedUris[activeSlot] = uri
+            showPreview(activeSlot, uri)
         }
     }
+
+    // All slots: preview views + pick buttons + remove buttons
+    private lateinit var previews: Array<ImageView>
+    private lateinit var pickBtns: Array<Button>
+    private lateinit var removeBtns: Array<Button>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,75 +44,130 @@ class AdminAddProductActivity : AppCompatActivity() {
 
         findViewById<ImageView>(R.id.ivAddProductBack).setOnClickListener { finish() }
 
-        findViewById<Button>(R.id.btnPickImage).setOnClickListener {
-            imagePicker.launch("image/*")
+        previews = arrayOf(
+            findViewById(R.id.ivPreview1),
+            findViewById(R.id.ivPreview2),
+            findViewById(R.id.ivPreview3),
+            findViewById(R.id.ivPreview4)
+        )
+        pickBtns = arrayOf(
+            findViewById(R.id.btnPickImage1),
+            findViewById(R.id.btnPickImage2),
+            findViewById(R.id.btnPickImage3),
+            findViewById(R.id.btnPickImage4)
+        )
+        removeBtns = arrayOf(
+            findViewById(R.id.btnRemoveImage1),
+            findViewById(R.id.btnRemoveImage2),
+            findViewById(R.id.btnRemoveImage3),
+            findViewById(R.id.btnRemoveImage4)
+        )
+
+        // Wire pick & remove buttons for each slot
+        for (i in 0..3) {
+            val slot = i
+            pickBtns[i].setOnClickListener {
+                activeSlot = slot
+                imagePicker.launch("image/*")
+            }
+            removeBtns[i].setOnClickListener {
+                selectedUris[slot] = null
+                previews[slot].visibility = View.GONE
+                removeBtns[slot].visibility = View.GONE
+            }
         }
 
+        // Save button
         findViewById<Button>(R.id.btnSaveAdminProduct).setOnClickListener {
             val name  = findViewById<EditText>(R.id.etAdminProductName).text.toString().trim()
             val price = findViewById<EditText>(R.id.etAdminProductPrice).text.toString().trim()
             val desc  = findViewById<EditText>(R.id.etAdminProductDesc).text.toString().trim()
             val specs = findViewById<EditText>(R.id.etAdminProductSpecs).text.toString().trim()
-            val urlField = findViewById<EditText>(R.id.etAdminImageUrl).text.toString().trim()
 
             if (name.isEmpty() || price.isEmpty()) {
                 Toast.makeText(this, "Name and Price are required!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            if (selectedImageUri != null) {
-                uploadImageThenSave(name, price, desc, specs, selectedImageUri!!)
-            } else if (urlField.isNotEmpty()) {
-                saveToFirestore(name, price, desc, specs, urlField)
-            } else {
-                // Save with default placeholder image
-                saveToFirestore(name, price, desc, specs, "https://via.placeholder.com/400x300.png?text=${name.replace(" ", "+")}")
+            val pickedCount = selectedUris.count { it != null }
+            if (pickedCount < 2) {
+                Toast.makeText(this, "Please select at least 2 images!", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
             }
+
+            // Upload all selected images and collect URLs
+            val urisToUpload = selectedUris.filterNotNull()
+            uploadAllImages(name, price, desc, specs, urisToUpload)
         }
     }
 
-    private fun uploadImageThenSave(name: String, price: String, desc: String, specs: String, uri: Uri) {
-        Toast.makeText(this, "Uploading image...", Toast.LENGTH_LONG).show()
+    private fun showPreview(slot: Int, uri: Uri) {
+        previews[slot].visibility = View.VISIBLE
+        previews[slot].setImageURI(uri)
+        removeBtns[slot].visibility = View.VISIBLE
+    }
 
-        val tempFile = java.io.File.createTempFile("product", ".jpg", cacheDir)
-        val input = contentResolver.openInputStream(uri)
-        val output = java.io.FileOutputStream(tempFile)
-        input?.copyTo(output)
-        input?.close()
-        output.close()
+    private fun uploadAllImages(
+        name: String, price: String, desc: String, specs: String,
+        uris: List<Uri>
+    ) {
+        Toast.makeText(this, "Uploading ${uris.size} image(s)...", Toast.LENGTH_LONG).show()
+        val saveBtn = findViewById<Button>(R.id.btnSaveAdminProduct)
+        saveBtn.isEnabled = false
 
         CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val result = MediaManager.get().cloudinary.uploader().unsignedUpload(
-                    tempFile.absolutePath,
-                    "android_uploads",
-                    com.cloudinary.utils.ObjectUtils.emptyMap()
-                )
-                tempFile.delete()
-                val imageUrl = result["secure_url"] as String? ?: ""
-                withContext(Dispatchers.Main) {
-                    saveToFirestore(name, price, desc, specs, imageUrl)
+            val uploadedUrls = mutableListOf<String>()
+            var errorMessage: String? = null
+
+            for (uri in uris) {
+                try {
+                    val tempFile = java.io.File.createTempFile("product", ".jpg", cacheDir)
+                    val input = contentResolver.openInputStream(uri)
+                    val output = java.io.FileOutputStream(tempFile)
+                    input?.copyTo(output)
+                    input?.close()
+                    output.close()
+
+                    val result = MediaManager.get().cloudinary.uploader().unsignedUpload(
+                        tempFile.absolutePath,
+                        "android_uploads",
+                        com.cloudinary.utils.ObjectUtils.emptyMap()
+                    )
+                    tempFile.delete()
+                    val url = result["secure_url"] as String? ?: ""
+                    if (url.isNotEmpty()) uploadedUrls.add(url)
+                } catch (e: Exception) {
+                    errorMessage = e.message
+                    break
                 }
-            } catch (e: Exception) {
-                tempFile.delete()
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(this@AdminAddProductActivity, "Upload failed: ${e.message}", Toast.LENGTH_LONG).show()
+            }
+
+            withContext(Dispatchers.Main) {
+                saveBtn.isEnabled = true
+                if (errorMessage != null) {
+                    Toast.makeText(this@AdminAddProductActivity, "Upload failed: $errorMessage", Toast.LENGTH_LONG).show()
+                } else {
+                    saveToFirestore(name, price, desc, specs, uploadedUrls)
                 }
             }
         }
     }
 
-    private fun saveToFirestore(name: String, price: String, desc: String, specs: String, imageUrl: String) {
+    private fun saveToFirestore(
+        name: String, price: String, desc: String, specs: String,
+        imageUrls: List<String>
+    ) {
         val product = hashMapOf(
-            "name"     to name,
-            "price"    to price,
-            "description" to desc,
+            "name"           to name,
+            "price"          to price,
+            "description"    to desc,
             "specifications" to specs,
-            "imageUrl" to imageUrl
+            "imageUrl"       to (imageUrls.firstOrNull() ?: ""),   // Keep backward-compat
+            "imageUrls"      to imageUrls
         )
         db.collection("products").add(product)
             .addOnSuccessListener {
-                Toast.makeText(this, "Product saved successfully!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "✅ Product saved with ${imageUrls.size} image(s)!", Toast.LENGTH_SHORT).show()
                 finish()
             }
             .addOnFailureListener { e ->

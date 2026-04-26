@@ -32,6 +32,7 @@ class AdminOrdersActivity : AppCompatActivity() {
         val status: String = "Pending",
         val totalAmount: Double = 0.0,
         val firstProductName: String = "",
+        val firstProductSize: String = "",
         val firstProductImage: String = "",
         val extraItemsCount: Int = 0
     )
@@ -106,6 +107,7 @@ class AdminOrdersActivity : AppCompatActivity() {
                     val itemsList = doc.get("items") as? List<Map<String, Any>> ?: emptyList()
                     val firstItem = itemsList.firstOrNull()
                     val pName = firstItem?.get("name") as? String ?: "Unknown Product"
+                    val pSize = firstItem?.get("size") as? String ?: "N/A"
                     val pImage = firstItem?.get("imageUrl") as? String ?: ""
                     val extraCount = if (itemsList.size > 1) itemsList.size - 1 else 0
 
@@ -118,6 +120,7 @@ class AdminOrdersActivity : AppCompatActivity() {
                         status       = doc.getString("status") ?: "Pending",
                         totalAmount  = doc.getDouble("totalAmount") ?: 0.0,
                         firstProductName = pName,
+                        firstProductSize = pSize,
                         firstProductImage = pImage,
                         extraItemsCount = extraCount
                     )
@@ -182,9 +185,9 @@ class AdminOrdersActivity : AppCompatActivity() {
             val order = orders[position]
             
             val displayName = if (order.extraItemsCount > 0) {
-                "${order.firstProductName} (+${order.extraItemsCount} more)"
+                "${order.firstProductName} (Size: ${order.firstProductSize}) (+${order.extraItemsCount} more)"
             } else {
-                order.firstProductName
+                "${order.firstProductName} (Size: ${order.firstProductSize})"
             }
             
             holder.tvName.text  = displayName
@@ -204,7 +207,7 @@ class AdminOrdersActivity : AppCompatActivity() {
             holder.tvStatus.backgroundTintList = ColorStateList.valueOf(statusColor)
 
             if (order.firstProductImage.isNotEmpty()) {
-                Glide.with(holder.itemView.context).load(order.firstProductImage).centerCrop().into(holder.ivImage)
+                Glide.with(holder.itemView.context).load(order.firstProductImage.optimizeCloudinaryUrl()).centerCrop().into(holder.ivImage)
             } else {
                 holder.ivImage.setImageResource(R.color.white)
             }

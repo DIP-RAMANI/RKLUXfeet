@@ -34,7 +34,7 @@ class WishlistActivity : AppCompatActivity() {
         setContentView(R.layout.activity_wishlist)
 
         val rvWishlistGrid = findViewById<RecyclerView>(R.id.rvWishlistGrid)
-        val bottomNav      = findViewById<com.google.android.material.tabs.TabLayout>(R.id.bottomNavigation)
+        val bottomNav      = findViewById<com.ismaeldivita.chipnavigation.ChipNavigationBar>(R.id.bottomNavigation)
         val tvEmpty        = try { findViewById<TextView>(R.id.tvWishlistEmpty) } catch (e: Exception) { null }
 
         findViewById<ImageView>(R.id.ivBackWishlist).setOnClickListener {
@@ -53,6 +53,7 @@ class WishlistActivity : AppCompatActivity() {
                 putExtra("productName", shoe.name)
                 putExtra("productPrice", shoe.price)
                 putExtra("productImage", shoe.imageUrl)
+                putStringArrayListExtra("productImageUrls", arrayListOf(shoe.imageUrl))
                 putExtra("productDesc", shoe.description)
                 putExtra("productSpecs", shoe.specifications)
             }
@@ -85,27 +86,23 @@ class WishlistActivity : AppCompatActivity() {
         }
 
         // Bottom nav
-        bottomNav.getTabAt(2)?.select()
-        bottomNav.addOnTabSelectedListener(object : com.google.android.material.tabs.TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: com.google.android.material.tabs.TabLayout.Tab?) {
-                if (tab?.position == 2) return
-                val intent = when (tab?.position) {
-                    0 -> Intent(this@WishlistActivity, HomeActivity::class.java)
-                    1 -> Intent(this@WishlistActivity, StoreActivity::class.java)
-                    3 -> Intent(this@WishlistActivity, ProfileActivity::class.java)
-                    else -> null
-                }
-                intent?.let {
-                    android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
-                        startActivity(it)
-                        overridePendingTransition(0, 0)
-                        finish()
-                    }, 150)
-                }
+        bottomNav.setItemSelected(R.id.nav_wishlist, true)
+        bottomNav.setOnItemSelectedListener { id ->
+            if (id == R.id.nav_wishlist) return@setOnItemSelectedListener
+            val intent = when (id) {
+                R.id.nav_home -> Intent(this@WishlistActivity, HomeActivity::class.java)
+                R.id.nav_shop -> Intent(this@WishlistActivity, StoreActivity::class.java)
+                R.id.nav_profile -> Intent(this@WishlistActivity, ProfileActivity::class.java)
+                else -> null
             }
-            override fun onTabUnselected(tab: com.google.android.material.tabs.TabLayout.Tab?) {}
-            override fun onTabReselected(tab: com.google.android.material.tabs.TabLayout.Tab?) {}
-        })
+            intent?.let {
+                android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+                    startActivity(it)
+                    overridePendingTransition(0, 0)
+                    finish()
+                }, 150)
+            }
+        }
     }
 
     override fun onResume() {
@@ -117,7 +114,7 @@ class WishlistActivity : AppCompatActivity() {
         val uid = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid ?: return
         val tvCartBadge = findViewById<android.widget.TextView>(R.id.tvCartBadge)
         com.google.firebase.firestore.FirebaseFirestore.getInstance()
-            .collection("users").document(uid).collection("cart")
+            .collection("carts").document(uid).collection("items")
             .get()
             .addOnSuccessListener { snapshot ->
                 val count = snapshot.size()
@@ -152,7 +149,7 @@ class WishlistActivity : AppCompatActivity() {
             val shoe = shoes[position]
             holder.tvName.text  = shoe.name
             holder.tvPrice.text = "₹${shoe.price.replace("₹", "").trim()}"
-            Glide.with(holder.itemView.context).load(shoe.imageUrl)
+            Glide.with(holder.itemView.context).load(shoe.imageUrl.optimizeCloudinaryUrl())
                 .placeholder(R.drawable.shoesgreen3).centerCrop().into(holder.ivShoe)
             holder.itemView.setOnClickListener { onClick(shoe) }
         }

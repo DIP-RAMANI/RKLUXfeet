@@ -1,19 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/nav_home"
         android:icon="@drawable/ic_home"
-        android:title="Home" />
+        android:title="Home"
+        app:cnb_backgroundColor="#336A5AE0"
+        app:cnb_iconColor="#6A5AE0"
+        app:cnb_textColor="#6A5AE0" />
+
     <item
         android:id="@+id/nav_shop"
         android:icon="@drawable/ic_shop"
-        android:title="Shop" />
+        android:title="Shop"
+        app:cnb_backgroundColor="#336A5AE0"
+        app:cnb_iconColor="#6A5AE0"
+        app:cnb_textColor="#6A5AE0" />
+
     <item
         android:id="@+id/nav_wishlist"
         android:icon="@drawable/ic_wishlist"
-        android:title="Wishlist" />
+        android:title="Wishlist"
+        app:cnb_backgroundColor="#336A5AE0"
+        app:cnb_iconColor="#6A5AE0"
+        app:cnb_textColor="#6A5AE0" />
+
     <item
         android:id="@+id/nav_profile"
         android:icon="@drawable/ic_profile"
-        android:title="Profile" />
+        android:title="Profile"
+        app:cnb_backgroundColor="#336A5AE0"
+        app:cnb_iconColor="#6A5AE0"
+        app:cnb_textColor="#6A5AE0" />
 </menu>

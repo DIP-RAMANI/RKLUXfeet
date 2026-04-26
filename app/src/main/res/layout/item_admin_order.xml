@@ -3,11 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="8dp"
+    android:layout_marginHorizontal="12dp"
     android:layout_marginVertical="6dp"
     app:cardCornerRadius="16dp"
-    app:cardElevation="3dp"
-    app:cardBackgroundColor="#1A1A2E"
+    app:cardElevation="2dp"
+    app:cardBackgroundColor="#FFFFFF"
     android:foreground="?attr/selectableItemBackground"
     android:clickable="true"
     android:focusable="true">
@@ -18,10 +18,11 @@
         android:orientation="vertical"
         android:padding="16dp">
 
+        <!-- Top Row: Image + Info + Status -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp">
+            android:layout_marginBottom="14dp">
 
             <!-- Product Image -->
             <androidx.cardview.widget.CardView
@@ -30,16 +31,17 @@
                 android:layout_height="64dp"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="0dp"
+                app:cardBackgroundColor="#F3F0FF"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
                 <ImageView
                     android:id="@+id/ivOrderProductImage"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:background="#EEEEEE" />
+                    android:scaleType="centerCrop" />
             </androidx.cardview.widget.CardView>
 
+            <!-- Order Info -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -49,13 +51,13 @@
                 app:layout_constraintStart_toEndOf="@id/cvOrderProductImage"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/tvOrderStatus">
-                
+
                 <TextView
                     android:id="@+id/tvOrderProductName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Product Name"
-                    android:textColor="#FFFFFF"
+                    android:textColor="#212121"
                     android:textSize="15sp"
                     android:textStyle="bold"
                     android:maxLines="1"
@@ -66,7 +68,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Customer: User"
-                    android:textColor="#A0A0A0"
+                    android:textColor="#757575"
                     android:textSize="12sp"
                     android:layout_marginTop="3dp"
                     android:maxLines="1"
@@ -77,9 +79,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Address: ..."
-                    android:textColor="#A0A0A0"
-                    android:textSize="12sp"
-                    android:maxLines="2"
+                    android:textColor="#9E9E9E"
+                    android:textSize="11sp"
+                    android:maxLines="1"
                     android:ellipsize="end"
                     android:layout_marginTop="2dp" />
 
@@ -87,9 +89,9 @@
                     android:id="@+id/tvOrderPaymentMethod"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Payment: ..."
-                    android:textColor="#A0A0A0"
-                    android:textSize="12sp"
+                    android:text="Payment: COD"
+                    android:textColor="#9E9E9E"
+                    android:textSize="11sp"
                     android:layout_marginTop="2dp" />
 
                 <TextView
@@ -97,12 +99,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="₹0"
-                    android:textColor="#FFFFFF"
-                    android:textSize="15sp"
+                    android:textColor="#7C4DFF"
+                    android:textSize="16sp"
                     android:textStyle="bold"
                     android:layout_marginTop="4dp" />
             </LinearLayout>
 
+            <!-- Status Badge -->
             <TextView
                 android:id="@+id/tvOrderStatus"
                 android:layout_width="wrap_content"
@@ -112,89 +115,91 @@
                 android:textSize="10sp"
                 android:textStyle="bold"
                 android:background="@drawable/bg_chip_active"
-                android:backgroundTint="#E53935"
+                android:backgroundTint="#FB8C00"
                 android:paddingHorizontal="10dp"
-                android:paddingVertical="4dp"
+                android:paddingVertical="5dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <!-- Line Separator -->
+        <!-- Divider -->
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#2E2E3E"
+            android:background="#F0EEFF"
             android:layout_marginBottom="12dp" />
 
-        <!-- Status Update Buttons -->
+        <!-- Status Buttons -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-            <com.google.android.material.button.MaterialButton 
-                android:id="@+id/btnSetPending"   
-                android:layout_width="0dp" 
-                android:layout_weight="1" 
-                android:layout_height="40dp" 
-                android:text="Pending"   
-                android:textAllCaps="false" 
-                android:textSize="10sp" 
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSetPending"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="38dp"
+                android:text="Pending"
+                android:textAllCaps="false"
+                android:textSize="10sp"
                 android:textStyle="bold"
-                android:backgroundTint="#E53935" 
-                app:cornerRadius="12dp"
+                android:backgroundTint="#FFECB3"
+                android:textColor="#E65100"
+                app:cornerRadius="10dp"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
-                android:padding="0dp"
-                android:layout_marginEnd="3dp" />
-                
-            <com.google.android.material.button.MaterialButton 
-                android:id="@+id/btnSetShipped"   
-                android:layout_width="0dp" 
-                android:layout_weight="1" 
-                android:layout_height="40dp" 
-                android:text="Shipped"   
-                android:textAllCaps="false" 
-                android:textSize="10sp" 
+                android:layout_marginEnd="4dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSetShipped"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="38dp"
+                android:text="Shipped"
+                android:textAllCaps="false"
+                android:textSize="10sp"
                 android:textStyle="bold"
-                android:backgroundTint="#FB8C00" 
-                app:cornerRadius="12dp"
+                android:backgroundTint="#E3F2FD"
+                android:textColor="#1565C0"
+                app:cornerRadius="10dp"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
-                android:padding="0dp"
-                android:layout_marginHorizontal="3dp" />
-                
-            <com.google.android.material.button.MaterialButton 
-                android:id="@+id/btnSetDelivered" 
-                android:layout_width="0dp" 
-                android:layout_weight="1" 
-                android:layout_height="40dp" 
-                android:text="Deliver" 
-                android:textAllCaps="false" 
-                android:textSize="10sp" 
+                android:layout_marginHorizontal="4dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSetDelivered"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="38dp"
+                android:text="Deliver"
+                android:textAllCaps="false"
+                android:textSize="10sp"
                 android:textStyle="bold"
-                android:backgroundTint="#43A047" 
-                app:cornerRadius="12dp"
+                android:backgroundTint="#E8F5E9"
+                android:textColor="#2E7D32"
+                app:cornerRadius="10dp"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
-                android:padding="0dp"
-                android:layout_marginHorizontal="3dp" />
-                
-            <com.google.android.material.button.MaterialButton 
-                android:id="@+id/btnSetCancelled" 
-                android:layout_width="0dp" 
-                android:layout_weight="1" 
-                android:layout_height="40dp" 
-                android:text="Cancel"    
-                android:textAllCaps="false" 
-                android:textSize="10sp" 
+                android:layout_marginHorizontal="4dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSetCancelled"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="38dp"
+                android:text="Cancel"
+                android:textAllCaps="false"
+                android:textSize="10sp"
                 android:textStyle="bold"
-                android:backgroundTint="#757575" 
-                app:cornerRadius="12dp"
+                android:backgroundTint="#FFEBEE"
+                android:textColor="#C62828"
+                app:cornerRadius="10dp"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
-                android:padding="0dp"
-                android:layout_marginStart="3dp" />
+                android:layout_marginStart="4dp" />
         </LinearLayout>
+
     </LinearLayout>
 </androidx.cardview.widget.CardView>

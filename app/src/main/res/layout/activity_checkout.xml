@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F9F9F9"
+    android:background="#F5F5F5"
     tools:context=".CheckoutActivity">
 
     <!-- Header Frame -->
@@ -86,8 +86,11 @@
                     android:id="@+id/etFullName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColor="#000000"
+                    android:textColorHint="#757575"
                     android:hint="Full Name"
                     android:drawableStart="@android:drawable/ic_menu_myplaces"
+                    android:drawableTint="#757575"
                     android:drawablePadding="8dp"
                     android:inputType="textPersonName" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -107,8 +110,11 @@
                     android:id="@+id/etAddress"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColor="#000000"
+                    android:textColorHint="#757575"
                     android:hint="Full Address (Street, Building)"
                     android:drawableStart="@android:drawable/ic_menu_mylocation"
+                    android:drawableTint="#757575"
                     android:drawablePadding="8dp"
                     android:inputType="textPostalAddress" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -134,6 +140,8 @@
                         android:id="@+id/etCity"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:textColor="#000000"
+                        android:textColorHint="#757575"
                         android:hint="City"
                         android:inputType="text" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -154,6 +162,8 @@
                         android:id="@+id/etPincode"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:textColor="#000000"
+                        android:textColorHint="#757575"
                         android:hint="PIN Code"
                         android:inputType="number" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -174,8 +184,11 @@
                     android:id="@+id/etPhone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColor="#000000"
+                    android:textColorHint="#757575"
                     android:hint="Phone Number"
                     android:drawableStart="@android:drawable/ic_menu_call"
+                    android:drawableTint="#757575"
                     android:drawablePadding="8dp"
                     android:inputType="phone" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -210,7 +223,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="UPI"
-                    android:textColor="#333333"
+                    android:textColor="#000000"
                     android:textSize="15sp"
                     android:textStyle="bold"
                     android:padding="16dp"
@@ -222,7 +235,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Credit / Debit Card"
-                    android:textColor="#333333"
+                    android:textColor="#000000"
                     android:textSize="15sp"
                     android:textStyle="bold"
                     android:padding="16dp"
@@ -235,13 +248,71 @@
                     android:layout_height="wrap_content"
                     android:text="Cash on Delivery (COD)"
                     android:checked="true"
-                    android:textColor="#333333"
+                    android:textColor="#000000"
                     android:textSize="15sp"
                     android:textStyle="bold"
                     android:padding="16dp"
                     android:layout_marginBottom="12dp"
                     android:background="@drawable/bg_border_rounded" />
             </RadioGroup>
+
+            <!-- Promo Codes -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Available Promo Codes"
+                android:textColor="#000000"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvAvailablePromos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:clipToPadding="false"
+                android:layout_marginBottom="12dp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/item_available_promo" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="24dp">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    app:boxStrokeColor="#7C4DFF"
+                    app:hintTextColor="#7C4DFF"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etPromoCode"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#000000"
+                        android:textColorHint="#757575"
+                        android:hint="Enter Promo Code"
+                        android:inputType="textCapCharacters" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <Button
+                    android:id="@+id/btnApplyPromo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="56dp"
+                    android:text="Apply"
+                    android:textColor="#FFFFFF"
+                    app:backgroundTint="#7C4DFF"
+                    app:cornerRadius="12dp" />
+            </LinearLayout>
 
             <!-- Order Summary -->
             <TextView
@@ -306,7 +377,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
+                android:layout_marginBottom="8dp"
                 android:paddingHorizontal="4dp">
                 <TextView
                     android:layout_width="wrap_content"
@@ -322,6 +393,33 @@
                     android:layout_alignParentEnd="true"
                     android:text="₹0"
                     android:textColor="#000000"
+                    android:textStyle="bold"
+                    android:textSize="14sp" />
+            </RelativeLayout>
+
+            <!-- Discount -->
+            <RelativeLayout
+                android:id="@+id/rlDiscount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:paddingHorizontal="4dp"
+                android:visibility="gone">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:text="Discount applied"
+                    android:textColor="#43A047"
+                    android:textStyle="bold"
+                    android:textSize="14sp" />
+                <TextView
+                    android:id="@+id/tvCheckoutDiscount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:text="-₹0"
+                    android:textColor="#43A047"
                     android:textStyle="bold"
                     android:textSize="14sp" />
             </RelativeLayout>

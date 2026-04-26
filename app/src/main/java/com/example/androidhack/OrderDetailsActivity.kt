@@ -41,13 +41,16 @@ class OrderDetailsActivity : AppCompatActivity() {
     private val db = FirebaseFirestore.getInstance()
 
     // Store loaded order data for invoice generation
-    private var currentOrderId    = ""
-    private var currentStatus     = ""
-    private var currentAddress    = ""
-    private var currentPayment    = ""
-    private var currentTotal      = 0.0
-    private var currentOrderDate  = ""
-    private var currentItems      = listOf<CartItem>()
+    private var currentOrderId      = ""
+    private var currentShortId      = ""
+    private var currentStatus       = ""
+    private var currentAddress      = ""
+    private var currentPayment      = ""
+    private var currentTotal        = 0.0
+    private var currentOrderDate    = ""
+    private var currentItems        = listOf<CartItem>()
+    private var currentPromoCode    = ""
+    private var currentDiscount     = 0.0
 
     private lateinit var tvOrderId: TextView
     private lateinit var tvOrderDate: TextView
@@ -57,6 +60,11 @@ class OrderDetailsActivity : AppCompatActivity() {
     private lateinit var tvPaymentMethod: TextView
     private lateinit var ivPaymentMethodIcon: ImageView
     private lateinit var rvItems: RecyclerView
+
+    // Promo UI
+    private lateinit var rlOrderPromoRow: android.widget.RelativeLayout
+    private lateinit var tvOrderPromoCode: TextView
+    private lateinit var tvOrderPromoDiscount: TextView
     
     // Tracking Timeline UI
     private lateinit var lineTracking1: View
@@ -75,6 +83,10 @@ class OrderDetailsActivity : AppCompatActivity() {
         tvShippingAddress = findViewById(R.id.tvShippingAddress)
         tvPaymentMethod = findViewById(R.id.tvPaymentMethod)
         ivPaymentMethodIcon = findViewById(R.id.ivPaymentMethodIcon)
+
+        rlOrderPromoRow = findViewById(R.id.rlOrderPromoRow)
+        tvOrderPromoCode = findViewById(R.id.tvOrderPromoCode)
+        tvOrderPromoDiscount = findViewById(R.id.tvOrderPromoDiscount)
         
         lineTracking1 = findViewById(R.id.lineTracking1)
         lineTracking2 = findViewById(R.id.lineTracking2)
@@ -126,34 +138,50 @@ class OrderDetailsActivity : AppCompatActivity() {
             .get()
             .addOnSuccessListener { doc ->
                 if (doc.exists()) {
-                    val status = doc.getString("status") ?: "Pending"
-                    val address = doc.getString("address") ?: ""
+                    val status        = doc.getString("status") ?: "Pending"
+                    val address       = doc.getString("address") ?: ""
                     val paymentMethod = doc.getString("paymentMethod") ?: ""
-                    val totalAmount = doc.getDouble("totalAmount") ?: 0.0
-                    val timestamp = doc.getTimestamp("createdAt")
+                    val totalAmount   = doc.getDouble("totalAmount") ?: 0.0
+                    val timestamp     = doc.getTimestamp("createdAt")
+                    val shortId       = doc.getString("shortOrderId") ?: orderId.take(10)
+                    val promoCode     = doc.getString("appliedPromoCode") ?: ""
+                    val discount      = doc.getDouble("discountAmount") ?: 0.0
 
                     currentOrderId   = orderId
+                    currentShortId   = shortId
                     currentStatus    = status
                     currentAddress   = address
                     currentPayment   = paymentMethod
                     currentTotal     = totalAmount
+                    currentPromoCode = promoCode
+                    currentDiscount  = discount
 
-                    tvOrderId.text = "Order #$orderId"
+                    // Show short, readable order ID
+                    tvOrderId.text = "Order #$shortId"
                     tvOrderStatus.text = status
                     tvShippingAddress.text = address
                     tvPaymentMethod.text = paymentMethod
                     tvOrderTotalAmount.text = "\u20b9${totalAmount.toInt()}"
+
+                    // Show promo row only if a promo was applied
+                    if (promoCode.isNotEmpty() && discount > 0) {
+                        rlOrderPromoRow.visibility = android.view.View.VISIBLE
+                        tvOrderPromoCode.text = promoCode
+                        tvOrderPromoDiscount.text = "-\u20b9${discount.toInt()}"
+                    } else {
+                        rlOrderPromoRow.visibility = android.view.View.GONE
+                    }
 
                     // Format Badge & Timeline Logic
                     setupStatusBadgeAndTimeline(status)
                     
                     // Format Payment Icon dynamically targeting vectors present
                     if (paymentMethod.contains("UPI", true)) {
-                        ivPaymentMethodIcon.setImageResource(R.drawable.ic_profile) // Mock standard
+                        ivPaymentMethodIcon.setImageResource(R.drawable.ic_profile)
                     } else if (paymentMethod.contains("COD", true) || paymentMethod.contains("Cash", true)) {
-                        ivPaymentMethodIcon.setImageResource(R.drawable.ic_cart) // Mock Cash/Cart indicator
+                        ivPaymentMethodIcon.setImageResource(R.drawable.ic_cart)
                     } else {
-                        ivPaymentMethodIcon.setImageResource(R.drawable.ic_card) // Generic card icon
+                        ivPaymentMethodIcon.setImageResource(R.drawable.ic_card)
                     }
 
                     if (timestamp != null) {
@@ -166,11 +194,12 @@ class OrderDetailsActivity : AppCompatActivity() {
                     val itemsList = doc.get("items") as? List<Map<String, Any>> ?: emptyList()
                     val parsedItems = itemsList.map { itemMap ->
                         CartItem(
-                            id = itemMap["id"] as? String ?: "",
-                            name = itemMap["name"] as? String ?: "",
-                            price = itemMap["price"] as? String ?: "0",
+                            id       = itemMap["id"] as? String ?: "",
+                            name     = itemMap["name"] as? String ?: "",
+                            price    = itemMap["price"] as? String ?: "0",
                             imageUrl = itemMap["imageUrl"] as? String ?: "",
-                            quantity = (itemMap["quantity"] as? Number)?.toLong() ?: 1L
+                            quantity = (itemMap["quantity"] as? Number)?.toLong() ?: 1L,
+                            size     = itemMap["size"] as? String ?: ""
                         )
                     }
 
@@ -250,7 +279,7 @@ class OrderDetailsActivity : AppCompatActivity() {
             // Invoice title
             canvas.drawText("INVOICE", 40f, y, titlePaint)
             y += 22f
-            canvas.drawText("Order ID: #${currentOrderId.take(16)}...", 40f, y, normalPaint)
+            canvas.drawText("Order ID: #$currentShortId", 40f, y, normalPaint)
             y += 20f
             canvas.drawText("Date: $currentOrderDate", 40f, y, normalPaint)
             y += 20f
@@ -279,7 +308,8 @@ class OrderDetailsActivity : AppCompatActivity() {
 
             // Items
             for (item in currentItems) {
-                canvas.drawText(item.name.take(32), 40f, y, normalPaint)
+                val itemNameWithSize = "${item.name.take(30)} (Size: ${item.size.ifEmpty { "N/A" }})"
+                canvas.drawText(itemNameWithSize, 40f, y, normalPaint)
                 canvas.drawText("${item.quantity}", 380f, y, normalPaint)
                 canvas.drawText(item.price, 470f, y, normalPaint)
                 y += 20f
@@ -289,16 +319,23 @@ class OrderDetailsActivity : AppCompatActivity() {
             canvas.drawLine(40f, y, 555f, y, linePaint)
             y += 24f
 
-            // Total
+            // Promo discount line (only if applied)
+            if (currentPromoCode.isNotEmpty() && currentDiscount > 0) {
+                canvas.drawText("Promo Code: $currentPromoCode", 40f, y, normalPaint)
+                canvas.drawText("-\u20b9${currentDiscount.toInt()}", 470f, y, greenPaint.apply { textSize = 14f })
+                y += 22f
+            }
+
+            // Grand Total
             canvas.drawText("Total Amount:", 40f, y, boldPaint.apply { textSize = 16f })
-            canvas.drawText("\u20b9${currentTotal.toInt()}", 470f, y, greenPaint)
+            canvas.drawText("\u20b9${currentTotal.toInt()}", 470f, y, greenPaint.apply { textSize = 16f })
             y += 40f
             canvas.drawText("Thank you for shopping with RKLUXfeet!", 40f, y, normalPaint)
 
             pdfDoc.finishPage(page)
 
-            // Save to Downloads
-            val fileName = "Invoice_${currentOrderId.take(8)}.pdf"
+            // Save to Downloads using short ID
+            val fileName = "Invoice_$currentShortId.pdf"
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 // Android 10+ — use MediaStore
@@ -380,6 +417,7 @@ class OrderDetailsActivity : AppCompatActivity() {
         class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             val tvName: TextView = view.findViewById(R.id.tvOrderDetailItemName)
             val tvQty: TextView = view.findViewById(R.id.tvOrderDetailItemQuantity)
+            val tvSize: TextView = view.findViewById(R.id.tvOrderDetailItemSize)
             val ivItem: ImageView = view.findViewById(R.id.ivOrderDetailItem)
         }
 
@@ -392,9 +430,10 @@ class OrderDetailsActivity : AppCompatActivity() {
             val item = items[position]
             holder.tvName.text = item.name
             holder.tvQty.text = "Quantity: ${item.quantity}"
+            holder.tvSize.text = "Size: ${item.size.ifEmpty { "N/A" }}"
             
             Glide.with(holder.itemView.context)
-                .load(item.imageUrl)
+                .load(item.imageUrl.optimizeCloudinaryUrl())
                 .centerCrop()
                 .placeholder(R.drawable.shoes017)
                 .into(holder.ivItem)

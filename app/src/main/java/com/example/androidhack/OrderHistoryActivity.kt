@@ -128,7 +128,7 @@ class OrderHistoryActivity : AppCompatActivity() {
             // Load the actual product thumbnail purchased in that order
             if (order.firstImageUrl.isNotEmpty()) {
                 Glide.with(holder.itemView.context)
-                    .load(order.firstImageUrl)
+                    .load(order.firstImageUrl.optimizeCloudinaryUrl())
                     .centerCrop()
                     .placeholder(R.drawable.ic_package)
                     .error(R.drawable.ic_package)

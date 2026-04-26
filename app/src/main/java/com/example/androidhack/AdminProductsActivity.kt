@@ -125,7 +125,7 @@ class AdminProductsActivity : AppCompatActivity() {
             holder.tvPrice.text = product.price
             
             if (product.imageUrl.isNotEmpty()) {
-                Glide.with(holder.itemView.context).load(product.imageUrl).centerCrop().into(holder.ivImage)
+                Glide.with(holder.itemView.context).load(product.imageUrl.optimizeCloudinaryUrl()).centerCrop().into(holder.ivImage)
             } else {
                 holder.ivImage.setImageResource(R.color.white)
             }

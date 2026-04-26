@@ -23,6 +23,7 @@ class StoreActivity : AppCompatActivity() {
         val name: String = "",
         val price: String = "",
         val imageUrl: String = "",
+        val imageUrls: List<String> = emptyList(),
         val brand: String = "",
         val timestamp: Long = 0L,
         val popularity: Int = 0,
@@ -41,7 +42,7 @@ class StoreActivity : AppCompatActivity() {
         setContentView(R.layout.activity_store)
 
         val rvStoreGrid = findViewById<RecyclerView>(R.id.rvStoreGrid)
-        val bottomNav = findViewById<com.google.android.material.tabs.TabLayout>(R.id.bottomNavigation)
+        val bottomNav = findViewById<com.ismaeldivita.chipnavigation.ChipNavigationBar>(R.id.bottomNavigation)
         val tvCount = findViewById<TextView>(R.id.tvResultsCount)
 
         findViewById<ImageView>(R.id.ivBackStore).setOnClickListener { finish() }
@@ -55,6 +56,7 @@ class StoreActivity : AppCompatActivity() {
                 putExtra("productName",   shoe.name)
                 putExtra("productPrice",  shoe.price)
                 putExtra("productImage",  shoe.imageUrl)
+                putStringArrayListExtra("productImageUrls", ArrayList(shoe.imageUrls.ifEmpty { listOf(shoe.imageUrl) }))
                 putExtra("productDesc",   shoe.description)
                 putExtra("productSpecs",  shoe.specifications)
             }
@@ -67,12 +69,15 @@ class StoreActivity : AppCompatActivity() {
             .addSnapshotListener { snapshot, _ ->
                 if (snapshot != null) {
                     allShoes = snapshot.documents.map { doc ->
+                        val urls = (doc.get("imageUrls") as? List<*>)?.filterIsInstance<String>() ?: emptyList()
+                        val primary = doc.getString("imageUrl") ?: ""
                         Shoe(
                             id         = doc.id,
                             name       = doc.getString("name") ?: "",
                             price      = doc.getString("price") ?: "",
-                            imageUrl   = doc.getString("imageUrl") ?: "",
-                            brand      = doc.getString("brand") ?: "", // Assuming 'brand' field exists in Firestore
+                            imageUrl   = primary,
+                            imageUrls  = urls.ifEmpty { if (primary.isNotEmpty()) listOf(primary) else emptyList() },
+                            brand      = doc.getString("brand") ?: "",
                             timestamp  = doc.getLong("timestamp") ?: 0L,
                             popularity = doc.getLong("popularity")?.toInt() ?: 0,
                             description    = doc.getString("description") ?: "",
@@ -125,27 +130,23 @@ class StoreActivity : AppCompatActivity() {
         setupBrandChip(R.id.brandOther, "other")
 
         // Bottom nav
-        bottomNav.getTabAt(1)?.select()
-        bottomNav.addOnTabSelectedListener(object : com.google.android.material.tabs.TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: com.google.android.material.tabs.TabLayout.Tab?) {
-                if (tab?.position == 1) return
-                val intent = when (tab?.position) {
-                    0 -> Intent(this@StoreActivity, HomeActivity::class.java)
-                    2 -> Intent(this@StoreActivity, WishlistActivity::class.java)
-                    3 -> Intent(this@StoreActivity, ProfileActivity::class.java)
-                    else -> null
-                }
-                intent?.let {
-                    android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
-                        startActivity(it)
-                        overridePendingTransition(0, 0)
-                        finish()
-                    }, 150)
-                }
+        bottomNav.setItemSelected(R.id.nav_shop, true)
+        bottomNav.setOnItemSelectedListener { id ->
+            if (id == R.id.nav_shop) return@setOnItemSelectedListener
+            val intent = when (id) {
+                R.id.nav_home -> Intent(this@StoreActivity, HomeActivity::class.java)
+                R.id.nav_wishlist -> Intent(this@StoreActivity, WishlistActivity::class.java)
+                R.id.nav_profile -> Intent(this@StoreActivity, ProfileActivity::class.java)
+                else -> null
             }
-            override fun onTabUnselected(tab: com.google.android.material.tabs.TabLayout.Tab?) {}
-            override fun onTabReselected(tab: com.google.android.material.tabs.TabLayout.Tab?) {}
-        })
+            intent?.let {
+                android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+                    startActivity(it)
+                    overridePendingTransition(0, 0)
+                    finish()
+                }, 150)
+            }
+        }
     }
 
     private fun setupChip(id: Int, sort: String) {
@@ -232,7 +233,7 @@ class StoreActivity : AppCompatActivity() {
         val uid = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid ?: return
         val tvCartBadge = findViewById<android.widget.TextView>(R.id.tvCartBadge)
         com.google.firebase.firestore.FirebaseFirestore.getInstance()
-            .collection("users").document(uid).collection("cart")
+            .collection("carts").document(uid).collection("items")
             .get()
             .addOnSuccessListener { snapshot ->
                 val count = snapshot.size()
@@ -275,7 +276,7 @@ class StoreActivity : AppCompatActivity() {
             holder.tvName.text  = shoe.name
             holder.tvPrice.text = "₹${shoe.price.replace("₹", "").trim()}"
             
-            Glide.with(holder.itemView.context).load(shoe.imageUrl)
+            Glide.with(holder.itemView.context).load(shoe.imageUrl.optimizeCloudinaryUrl())
                 .placeholder(R.drawable.shoesgreen3)
                 .fitCenter()
                 .into(holder.ivShoe)
