@@ -1,13 +1,11 @@
 package com.example.androidhack
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.RecyclerView
 
 class PaymentMethodsActivity : AppCompatActivity() {
 
@@ -19,40 +17,20 @@ class PaymentMethodsActivity : AppCompatActivity() {
             finish()
         }
 
-        val rvPaymentMethods = findViewById<RecyclerView>(R.id.rvPaymentMethods)
-        val dummyPayments = listOf(
-            PaymentItem("Visa", "Ending in 4242"),
-            PaymentItem("Mastercard", "Ending in 1234"),
-            PaymentItem("PayPal", "")
-        )
-        
-        rvPaymentMethods.adapter = PaymentAdapter(dummyPayments)
-    }
+        // Hide the RecyclerView and show an informative empty state instead
+        val rv = findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.rvPaymentMethods)
+        rv.visibility = View.GONE
 
-    data class PaymentItem(val title: String, val detail: String)
+        val tvLabel = findViewById<TextView>(R.id.tvSavedPaymentMethods)
+        tvLabel.text = "Payment Options"
 
-    class PaymentAdapter(private val payments: List<PaymentItem>) : RecyclerView.Adapter<PaymentAdapter.ViewHolder>() {
-        class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-            val tvTitle: TextView = view.findViewById(R.id.tvPaymentTitle)
-            val tvDetail: TextView = view.findViewById(R.id.tvPaymentDetail)
+        // "Add Payment Method" button informs users how to pay
+        findViewById<android.widget.Button>(R.id.btnAddPaymentMethod).setOnClickListener {
+            Toast.makeText(
+                this,
+                "Choose UPI, Card, or Cash on Delivery at checkout when placing your order.",
+                Toast.LENGTH_LONG
+            ).show()
         }
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.item_payment_method, parent, false)
-            return ViewHolder(view)
-        }
-
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            val payment = payments[position]
-            holder.tvTitle.text = payment.title
-            if (payment.detail.isNotEmpty()) {
-                holder.tvDetail.text = payment.detail
-                holder.tvDetail.visibility = View.VISIBLE
-            } else {
-                holder.tvDetail.visibility = View.GONE
-            }
-        }
-
-        override fun getItemCount() = payments.size
     }
 }

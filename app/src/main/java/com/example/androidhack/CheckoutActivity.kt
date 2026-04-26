@@ -215,8 +215,9 @@ class CheckoutActivity : AppCompatActivity(), PaymentResultListener {
 
         // Count existing orders to generate a sequential short ID like RKLUX001
         db.collection("orders").get().addOnSuccessListener { snapshot ->
+            // Use UUID-prefix + count for a collision-safe short ID (e.g. RKLUX-A3F-007)
             val nextNum   = snapshot.size() + 1
-            val shortId   = "RKLUX" + nextNum.toString().padStart(3, '0')
+            val shortId   = "RKLUX" + nextNum.toString().padStart(3, '0') + "-" + java.util.UUID.randomUUID().toString().take(4).uppercase()
             val orderId   = java.util.UUID.randomUUID().toString()
 
             val itemsMap = cartItems.map {
@@ -309,30 +310,56 @@ class CheckoutActivity : AppCompatActivity(), PaymentResultListener {
     private fun saveOrderToFirestore() {
         val oId = pendingOrderId ?: return
         val oData = pendingOrderData ?: return
+        val shortId = oData["shortOrderId"] as String
 
         db.collection("orders").document(oId)
             .set(oData)
             .addOnSuccessListener {
-                clearCartAndFinish(oId)
+                clearCartAndFinish(oId, shortId)
             }
             .addOnFailureListener {
                 Toast.makeText(this, "Failed to place order. Try again.", Toast.LENGTH_SHORT).show()
             }
     }
 
-    private fun clearCartAndFinish(orderId: String) {
+    private fun clearCartAndFinish(orderId: String, shortId: String) {
         if (uid != null) {
             val cartRef = db.collection("carts").document(uid!!).collection("items")
             cartRef.get().addOnSuccessListener { snapshot ->
+                // Use WriteBatch for atomic deletion of all cart items at once
+                val batch = db.batch()
                 for (doc in snapshot.documents) {
-                    doc.reference.delete()
+                    batch.delete(doc.reference)
+                }
+                batch.commit().addOnFailureListener {
+                    // Non-critical: order is already placed, just log
+                    android.util.Log.e("Checkout", "Cart clear failed: ${it.message}")
                 }
             }
         }
-        
+
+        // Show Instant Local Notification
+        val intent = Intent(this, OrderDetailsActivity::class.java).apply {
+            putExtra("orderId", orderId)
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        val pendingIntent = android.app.PendingIntent.getActivity(
+            this, 0, intent,
+            android.app.PendingIntent.FLAG_UPDATE_CURRENT or android.app.PendingIntent.FLAG_IMMUTABLE
+        )
+        val notification = androidx.core.app.NotificationCompat.Builder(this, "rkluxfeet_orders")
+            .setSmallIcon(R.drawable.ic_cart)
+            .setContentTitle("Order Placed Successfully! 🎉")
+            .setContentText("Your order #$shortId has been received.")
+            .setPriority(androidx.core.app.NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true)
+            .setContentIntent(pendingIntent)
+            .build()
+
+        val manager = getSystemService(android.content.Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
+        manager.notify(System.currentTimeMillis().toInt(), notification)
+
         Toast.makeText(this, "Order Placed Successfully!", Toast.LENGTH_SHORT).show()
-        val intent = Intent(this, OrderDetailsActivity::class.java)
-        intent.putExtra("orderId", orderId)
         startActivity(intent)
         finish()
     }

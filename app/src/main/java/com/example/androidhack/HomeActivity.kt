@@ -54,6 +54,13 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
 
+        // Request notification permission for Android 13+ (API 33+)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            if (androidx.core.content.ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                androidx.core.app.ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 101)
+            }
+        }
+
         val rvNewArrivals = findViewById<RecyclerView>(R.id.rvNewArrivals)
         val rvBestsellers = findViewById<RecyclerView>(R.id.rvBestsellers)
         val bottomNav     = findViewById<com.ismaeldivita.chipnavigation.ChipNavigationBar>(R.id.bottomNavigation)

@@ -70,4 +70,7 @@ dependencies {
 
     // Animated Chip Navigation Bar
     implementation("com.github.ismaeldivita:chip-navigation-bar:1.4.0")
+
+    // Firebase Cloud Messaging (Push Notifications)
+    implementation("com.google.firebase:firebase-messaging")
 }

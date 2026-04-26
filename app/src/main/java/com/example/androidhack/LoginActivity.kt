@@ -96,6 +96,8 @@ class LoginActivity : AppCompatActivity() {
                     auth.signInWithEmailAndPassword(email, password)
                         .addOnCompleteListener(this) { task ->
                             if (task.isSuccessful) {
+                                val uid = auth.currentUser?.uid
+                                if (uid != null) MyFirebaseMessagingService.saveFcmToken(uid)
                                 showToast("Login successful!")
                                 val intent = Intent(this, HomeActivity::class.java)
                                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -136,6 +138,7 @@ class LoginActivity : AppCompatActivity() {
                                 db.collection("users").document(user.uid)
                                     .set(userMap, com.google.firebase.firestore.SetOptions.merge())
                                     .addOnCompleteListener {
+                                        MyFirebaseMessagingService.saveFcmToken(user.uid)
                                         showToast("Google Login successful!")
                                         val intent = Intent(this@LoginActivity, HomeActivity::class.java)
                                         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

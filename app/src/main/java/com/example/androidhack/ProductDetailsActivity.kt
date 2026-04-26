@@ -63,6 +63,20 @@ class ProductDetailsActivity : AppCompatActivity() {
             findViewById<TextView>(R.id.tvProductName).text  = productName
             findViewById<TextView>(R.id.tvProductDesc).text  = productDesc
 
+            // Fetch real rating from Firestore
+            db.collection("products").document(productId).get().addOnSuccessListener { doc ->
+                if (doc.exists()) {
+                    val avgRating = doc.getDouble("avgRating") ?: 0.0
+                    val reviewCount = doc.getLong("reviewCount") ?: 0L
+                    val tvRating = findViewById<TextView>(R.id.tvProductRating)
+                    if (reviewCount > 0) {
+                        tvRating.text = String.format("%.1f (%d)", avgRating, reviewCount)
+                    } else {
+                        tvRating.text = "New"
+                    }
+                }
+            }
+
             // Price: ensure ₹ prefix, show strikethrough original (+20% implied)
             val cleanPrice = "₹${productPrice.replace("₹", "").trim()}"
             val tvPrice = findViewById<TextView>(R.id.tvProductPrice)
@@ -286,16 +300,21 @@ class ProductDetailsActivity : AppCompatActivity() {
     // ─── Cart ────────────────────────────────────────────────────────────────
     private fun addToCart(id: String, name: String, price: String, imageUrl: String, navigateToCart: Boolean = false) {
         val uid = uid ?: return
-        val cartRef = db.collection("carts").document(uid).collection("items").document(id)
+
+        // Use a compound key: productId + size so each size is a SEPARATE cart item
+        val cartItemKey = "${id}_${selectedSize}"
+        val cartRef = db.collection("carts").document(uid).collection("items").document(cartItemKey)
 
         cartRef.get().addOnSuccessListener { doc ->
             if (doc.exists()) {
+                // Same product + same size → just increase quantity
                 val currentQty = doc.getLong("quantity") ?: 1L
                 cartRef.update("quantity", currentQty + 1).addOnSuccessListener {
                     Toast.makeText(this, "🛒 Cart updated! (Size: $selectedSize)", Toast.LENGTH_SHORT).show()
                     if (navigateToCart) startActivity(Intent(this, CartActivity::class.java))
                 }
             } else {
+                // New product or new size → create a fresh cart item
                 val item = hashMapOf(
                     "id"       to id,
                     "name"     to name,

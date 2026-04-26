@@ -79,14 +79,36 @@
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
                 android:background="#F5F5F5"
-                android:hint="e.g. Sole: Rubber\nMaterial: Leather..."
+                android:hint="e.g. Sole: Rubber&#10;Material: Leather..."
                 android:paddingHorizontal="16dp"
                 android:paddingVertical="12dp"
                 android:gravity="top"
                 android:layout_marginBottom="20dp" />
 
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Brand" android:textColor="#000000" android:textStyle="bold" android:layout_marginBottom="6dp" />
+            <EditText
+                android:id="@+id/etAdminProductBrand"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:background="#F5F5F5"
+                android:hint="e.g. Nike, Adidas, Puma, Asics"
+                android:paddingHorizontal="16dp"
+                android:layout_marginBottom="20dp" />
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Discount % (optional, e.g. 20 for 20% off)" android:textColor="#000000" android:textStyle="bold" android:layout_marginBottom="6dp" />
+            <EditText
+                android:id="@+id/etAdminProductDiscount"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:background="#F5F5F5"
+                android:hint="0 = no discount"
+                android:paddingHorizontal="16dp"
+                android:inputType="number"
+                android:layout_marginBottom="20dp" />
+
             <!-- Image Section -->
             <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#E0E0E0" android:layout_marginBottom="20dp" />
+
 
             <TextView
                 android:layout_width="wrap_content"

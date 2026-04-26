@@ -64,7 +64,7 @@ class PersonalInformationActivity : AppCompatActivity() {
             return
         }
 
-        val name = etName.text.toString().trim()
+        val name  = etName.text.toString().trim()
         val email = etEmail.text.toString().trim()
         val phone = etPhone.text.toString().trim()
 
@@ -74,16 +74,40 @@ class PersonalInformationActivity : AppCompatActivity() {
         }
 
         val updates = hashMapOf<String, Any>(
-            "name" to name,
+            "name"  to name,
             "email" to email,
             "phone" to phone
         )
 
+        // Step 1: Update Firestore profile data
         db.collection("users").document(uid!!)
             .set(updates, SetOptions.merge())
             .addOnSuccessListener {
-                Toast.makeText(this, "Changes saved successfully", Toast.LENGTH_SHORT).show()
-                finish()
+                // Step 2: Update email in Firebase Auth if it changed
+                val currentAuthEmail = auth.currentUser?.email ?: ""
+                if (email != currentAuthEmail) {
+                    auth.currentUser?.verifyBeforeUpdateEmail(email)
+                        ?.addOnSuccessListener {
+                            Toast.makeText(
+                                this,
+                                "Profile saved! A verification link has been sent to $email — please confirm to update your login email.",
+                                Toast.LENGTH_LONG
+                            ).show()
+                            finish()
+                        }
+                        ?.addOnFailureListener { e ->
+                            // Auth email update failed (e.g. needs re-login) — Firestore already saved
+                            Toast.makeText(
+                                this,
+                                "Profile saved, but email login update failed: ${e.message}\nPlease log out and log in again to change login email.",
+                                Toast.LENGTH_LONG
+                            ).show()
+                            finish()
+                        }
+                } else {
+                    Toast.makeText(this, "Changes saved successfully", Toast.LENGTH_SHORT).show()
+                    finish()
+                }
             }
             .addOnFailureListener { e ->
                 Toast.makeText(this, "Failed to save: ${e.message}", Toast.LENGTH_SHORT).show()

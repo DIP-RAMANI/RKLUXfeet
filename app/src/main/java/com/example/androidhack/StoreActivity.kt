@@ -27,6 +27,7 @@ class StoreActivity : AppCompatActivity() {
         val brand: String = "",
         val timestamp: Long = 0L,
         val popularity: Int = 0,
+        val discountPercent: Int = 0,
         val description: String = "",
         val specifications: String = ""
     )
@@ -72,16 +73,17 @@ class StoreActivity : AppCompatActivity() {
                         val urls = (doc.get("imageUrls") as? List<*>)?.filterIsInstance<String>() ?: emptyList()
                         val primary = doc.getString("imageUrl") ?: ""
                         Shoe(
-                            id         = doc.id,
-                            name       = doc.getString("name") ?: "",
-                            price      = doc.getString("price") ?: "",
-                            imageUrl   = primary,
-                            imageUrls  = urls.ifEmpty { if (primary.isNotEmpty()) listOf(primary) else emptyList() },
-                            brand      = doc.getString("brand") ?: "",
-                            timestamp  = doc.getLong("timestamp") ?: 0L,
-                            popularity = doc.getLong("popularity")?.toInt() ?: 0,
-                            description    = doc.getString("description") ?: "",
-                            specifications = doc.getString("specifications") ?: ""
+                            id              = doc.id,
+                            name            = doc.getString("name") ?: "",
+                            price           = doc.getString("price") ?: "",
+                            imageUrl        = primary,
+                            imageUrls       = urls.ifEmpty { if (primary.isNotEmpty()) listOf(primary) else emptyList() },
+                            brand           = doc.getString("brand") ?: "",
+                            timestamp       = doc.getTimestamp("createdAt")?.toDate()?.time ?: doc.getLong("timestamp") ?: 0L,
+                            popularity      = doc.getLong("popularity")?.toInt() ?: 0,
+                            discountPercent = doc.getLong("discountPercent")?.toInt() ?: 0,
+                            description     = doc.getString("description") ?: "",
+                            specifications  = doc.getString("specifications") ?: ""
                         )
                     }
                     if (allShoes.isEmpty()) {
@@ -197,16 +199,15 @@ class StoreActivity : AppCompatActivity() {
             filtered = filtered.filter { it.name.contains(currentSearch, ignoreCase = true) }
         }
 
-        // Brand filter
+        // Brand filter — uses the real `brand` Firestore field
         if (currentBrand != "all") {
             filtered = if (currentBrand == "other") {
                 filtered.filter { shoe ->
-                    val lower = shoe.name.lowercase()
-                    !lower.contains("nike") && !lower.contains("adidas") &&
-                    !lower.contains("puma") && !lower.contains("asics")
+                    val b = shoe.brand.lowercase()
+                    b.isEmpty() || (b != "nike" && b != "adidas" && b != "puma" && b != "asics")
                 }
             } else {
-                filtered.filter { it.name.contains(currentBrand, ignoreCase = true) }
+                filtered.filter { it.brand.equals(currentBrand, ignoreCase = true) }
             }
         }
 
@@ -214,8 +215,8 @@ class StoreActivity : AppCompatActivity() {
         filtered = when (currentSort) {
             "price_low"   -> filtered.sortedBy { parsePrice(it.price) }
             "price_high"  -> filtered.sortedByDescending { parsePrice(it.price) }
-            "new"         -> filtered.reversed()   // newest = last added = last in list
-            "bestseller"  -> filtered              // Static order = bestseller order
+            "new"         -> filtered.sortedByDescending { it.timestamp }  // newest first
+            "bestseller"  -> filtered.sortedByDescending { it.popularity }
             else          -> filtered
         }
 
@@ -293,10 +294,10 @@ class StoreActivity : AppCompatActivity() {
             val colorIndex = Math.abs(shoe.id.hashCode()) % colors.size
             holder.rlImageContainer.setBackgroundColor(colors[colorIndex])
 
-            // Randomize Discount/New Badge
-            if (position % 4 == 0) {
+            // Real discount badge from Firestore
+            if (shoe.discountPercent > 0) {
                 holder.tvBadge.visibility = View.VISIBLE
-                holder.tvBadge.text = "-20%"
+                holder.tvBadge.text = "-${shoe.discountPercent}%"
                 holder.tvBadge.setBackgroundColor(android.graphics.Color.parseColor("#FF3B30"))
             } else if (position % 5 == 0) {
                 holder.tvBadge.visibility = View.VISIBLE

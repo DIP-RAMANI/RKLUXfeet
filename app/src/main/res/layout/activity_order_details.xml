@@ -48,8 +48,7 @@
             android:layout_width="28dp"
             android:layout_height="28dp"
             android:layout_marginEnd="20dp"
-            android:src="@drawable/ic_help"
-            app:tint="#000000"
+            android:src="@drawable/ic_whatsapp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
@@ -395,7 +394,22 @@
                 android:textStyle="bold"
                 android:textAllCaps="false" />
 
+            <!-- Rate Product button — visible only for Delivered orders -->
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnRateProduct"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/bg_button_yellow"
+                android:text="⭐ Rate your Purchase"
+                android:textColor="#000000"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textAllCaps="false"
+                android:visibility="gone" />
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+

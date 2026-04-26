@@ -79,10 +79,12 @@ class AdminAddProductActivity : AppCompatActivity() {
 
         // Save button
         findViewById<Button>(R.id.btnSaveAdminProduct).setOnClickListener {
-            val name  = findViewById<EditText>(R.id.etAdminProductName).text.toString().trim()
-            val price = findViewById<EditText>(R.id.etAdminProductPrice).text.toString().trim()
-            val desc  = findViewById<EditText>(R.id.etAdminProductDesc).text.toString().trim()
-            val specs = findViewById<EditText>(R.id.etAdminProductSpecs).text.toString().trim()
+            val name     = findViewById<EditText>(R.id.etAdminProductName).text.toString().trim()
+            val price    = findViewById<EditText>(R.id.etAdminProductPrice).text.toString().trim()
+            val desc     = findViewById<EditText>(R.id.etAdminProductDesc).text.toString().trim()
+            val specs    = findViewById<EditText>(R.id.etAdminProductSpecs).text.toString().trim()
+            val brand    = findViewById<EditText>(R.id.etAdminProductBrand).text.toString().trim()
+            val discount = findViewById<EditText>(R.id.etAdminProductDiscount).text.toString().trim().toIntOrNull() ?: 0
 
             if (name.isEmpty() || price.isEmpty()) {
                 Toast.makeText(this, "Name and Price are required!", Toast.LENGTH_SHORT).show()
@@ -97,7 +99,7 @@ class AdminAddProductActivity : AppCompatActivity() {
 
             // Upload all selected images and collect URLs
             val urisToUpload = selectedUris.filterNotNull()
-            uploadAllImages(name, price, desc, specs, urisToUpload)
+            uploadAllImages(name, price, desc, specs, brand, discount, urisToUpload)
         }
     }
 
@@ -109,6 +111,7 @@ class AdminAddProductActivity : AppCompatActivity() {
 
     private fun uploadAllImages(
         name: String, price: String, desc: String, specs: String,
+        brand: String, discountPercent: Int,
         uris: List<Uri>
     ) {
         Toast.makeText(this, "Uploading ${uris.size} image(s)...", Toast.LENGTH_LONG).show()
@@ -147,7 +150,7 @@ class AdminAddProductActivity : AppCompatActivity() {
                 if (errorMessage != null) {
                     Toast.makeText(this@AdminAddProductActivity, "Upload failed: $errorMessage", Toast.LENGTH_LONG).show()
                 } else {
-                    saveToFirestore(name, price, desc, specs, uploadedUrls)
+                    saveToFirestore(name, price, desc, specs, brand, discountPercent, uploadedUrls)
                 }
             }
         }
@@ -155,15 +158,19 @@ class AdminAddProductActivity : AppCompatActivity() {
 
     private fun saveToFirestore(
         name: String, price: String, desc: String, specs: String,
+        brand: String, discountPercent: Int,
         imageUrls: List<String>
     ) {
         val product = hashMapOf(
-            "name"           to name,
-            "price"          to price,
-            "description"    to desc,
-            "specifications" to specs,
-            "imageUrl"       to (imageUrls.firstOrNull() ?: ""),   // Keep backward-compat
-            "imageUrls"      to imageUrls
+            "name"            to name,
+            "price"           to price,
+            "description"     to desc,
+            "specifications"  to specs,
+            "brand"           to brand.lowercase(),
+            "discountPercent" to discountPercent,
+            "imageUrl"        to (imageUrls.firstOrNull() ?: ""),   // backward-compat
+            "imageUrls"       to imageUrls,
+            "createdAt"       to com.google.firebase.Timestamp.now()
         )
         db.collection("products").add(product)
             .addOnSuccessListener {

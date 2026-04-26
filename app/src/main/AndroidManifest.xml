@@ -9,6 +9,8 @@
         tools:ignore="ScopedStorage" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
+    <!-- Required for push notifications on Android 13+ -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     
     <application
         android:name=".MyApplication"
@@ -98,11 +100,6 @@
             android:name=".OrderDetailsActivity"
             android:exported="false" />
 
-        <!-- Admin / Add Product -->
-        <activity
-            android:name=".AddProductActivity"
-            android:exported="false" />
-
         <!-- Admin Panel Activities -->
         <activity android:name=".AdminDashboardActivity"  android:exported="false" />
         <activity android:name=".AdminUsersActivity"       android:exported="false" />
@@ -110,6 +107,15 @@
         <activity android:name=".AdminProductsActivity"    android:exported="false" />
         <activity android:name=".AdminAddProductActivity"  android:exported="false" />
         <activity android:name=".AdminPromoCodesActivity"  android:exported="false" />
+
+        <!-- FCM Push Notification Service -->
+        <service
+            android:name=".MyFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
 
         <!-- FileProvider for sharing PDF invoices -->
         <provider
