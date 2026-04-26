@@ -262,7 +262,7 @@ class CheckoutActivity : AppCompatActivity(), PaymentResultListener {
     private fun startRazorpayCheckout(name: String, phone: String, email: String) {
         val checkout = Checkout()
         // Test Key. The user can replace this with their actual key.
-        checkout.setKeyID("rzp_test_SV3mBW8HNP1Ewf") 
+        checkout.setKeyID("YOURAPIKEY") 
 
         try {
             val options = JSONObject()
