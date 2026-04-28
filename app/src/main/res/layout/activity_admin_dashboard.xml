@@ -373,6 +373,27 @@
                 android:insetTop="0dp"
                 android:insetBottom="0dp" />
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSendNotifications"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:text="Send Notifications"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#00695C"
+                app:icon="@drawable/ic_bell"
+                app:iconTint="#00695C"
+                app:iconGravity="textStart"
+                app:backgroundTint="#FFFFFF"
+                app:strokeColor="#B2DFDB"
+                app:strokeWidth="1.5dp"
+                app:cornerRadius="16dp"
+                android:layout_marginBottom="12dp"
+                app:elevation="2dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp" />
+
         </LinearLayout>
     </ScrollView>
 

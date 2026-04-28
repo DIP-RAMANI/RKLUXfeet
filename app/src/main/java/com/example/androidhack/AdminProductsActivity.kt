@@ -79,8 +79,8 @@ class AdminProductsActivity : AppCompatActivity() {
                     name     = doc.getString("name") ?: "",
                     price    = doc.getString("price") ?: "",
                     imageUrl = doc.getString("imageUrl") ?: "",
-                    // Simple mock constraint -> 1 out of every 4 products is out of stock. 
-                    inStock  = index % 4 != 0 
+                    // Read actual stock status from database, default to true
+                    inStock  = doc.getBoolean("inStock") ?: true
                 )
             }
             applyFilters()

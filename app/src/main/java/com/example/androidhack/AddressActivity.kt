@@ -27,7 +27,7 @@ class AddressActivity : AppCompatActivity() {
 
     data class AddressItem(
         val id: String = "",
-        val label: String = "",       // e.g. "Home", "Work"
+        val label: String = "",
         val fullName: String = "",
         val addressLine: String = "",
         val city: String = "",
@@ -40,13 +40,17 @@ class AddressActivity : AppCompatActivity() {
         setContentView(R.layout.activity_address)
 
         rvAddresses = findViewById(R.id.rvAddresses)
-        adapter = AddressAdapter(addressList) { item -> confirmDelete(item) }
+        adapter = AddressAdapter(
+            addressList,
+            onDelete = { item -> confirmDelete(item) },
+            onEdit   = { item -> showAddAddressDialog(item) }
+        )
         rvAddresses.adapter = adapter
 
         findViewById<ImageView>(R.id.ivBackAddress).setOnClickListener { finish() }
 
         findViewById<Button>(R.id.btnAddAddress).setOnClickListener {
-            showAddAddressDialog()
+            showAddAddressDialog(null)
         }
 
         loadAddresses()
@@ -76,35 +80,56 @@ class AddressActivity : AppCompatActivity() {
             }
     }
 
-    private fun showAddAddressDialog() {
+    /** Pass null for [existing] to add a new address; pass the item to edit it. */
+    private fun showAddAddressDialog(existing: AddressItem?) {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_address, null)
         val dialog = AlertDialog.Builder(this)
             .setView(dialogView)
             .create()
 
-        // Transparent background so our custom rounded card shows cleanly
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
-        // Wire Cancel button
+        val etLabel   = dialogView.findViewById<TextInputEditText>(R.id.etAddressLabel)
+        val etName    = dialogView.findViewById<TextInputEditText>(R.id.etAddressFullName)
+        val etLine    = dialogView.findViewById<TextInputEditText>(R.id.etAddressLine)
+        val etCity    = dialogView.findViewById<TextInputEditText>(R.id.etAddressCity)
+        val etPin     = dialogView.findViewById<TextInputEditText>(R.id.etAddressPincode)
+        val etPhone   = dialogView.findViewById<TextInputEditText>(R.id.etAddressPhone)
+        val btnSave   = dialogView.findViewById<Button>(R.id.btnSaveAddress)
+
+        // Pre-fill fields if editing
+        if (existing != null) {
+            etLabel.setText(existing.label)
+            etName.setText(existing.fullName)
+            etLine.setText(existing.addressLine)
+            etCity.setText(existing.city)
+            etPin.setText(existing.pincode)
+            etPhone.setText(existing.phone)
+            btnSave.text = "Update Address"
+        }
+
         dialogView.findViewById<Button>(R.id.btnCancelAddress).setOnClickListener {
             dialog.dismiss()
         }
 
-        // Wire Save button
-        dialogView.findViewById<Button>(R.id.btnSaveAddress).setOnClickListener {
-            val label       = dialogView.findViewById<TextInputEditText>(R.id.etAddressLabel).text.toString().trim()
-            val fullName    = dialogView.findViewById<TextInputEditText>(R.id.etAddressFullName).text.toString().trim()
-            val addressLine = dialogView.findViewById<TextInputEditText>(R.id.etAddressLine).text.toString().trim()
-            val city        = dialogView.findViewById<TextInputEditText>(R.id.etAddressCity).text.toString().trim()
-            val pincode     = dialogView.findViewById<TextInputEditText>(R.id.etAddressPincode).text.toString().trim()
-            val phone       = dialogView.findViewById<TextInputEditText>(R.id.etAddressPhone).text.toString().trim()
+        btnSave.setOnClickListener {
+            val label       = etLabel.text.toString().trim()
+            val fullName    = etName.text.toString().trim()
+            val addressLine = etLine.text.toString().trim()
+            val city        = etCity.text.toString().trim()
+            val pincode     = etPin.text.toString().trim()
+            val phone       = etPhone.text.toString().trim()
 
             if (label.isEmpty() || fullName.isEmpty() || addressLine.isEmpty() || city.isEmpty() || pincode.isEmpty() || phone.isEmpty()) {
                 Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            saveAddress(label, fullName, addressLine, city, pincode, phone)
+            if (existing != null) {
+                updateAddress(existing.id, label, fullName, addressLine, city, pincode, phone)
+            } else {
+                saveAddress(label, fullName, addressLine, city, pincode, phone)
+            }
             dialog.dismiss()
         }
 
@@ -125,11 +150,33 @@ class AddressActivity : AppCompatActivity() {
             .collection("addresses")
             .add(data)
             .addOnSuccessListener {
-                Toast.makeText(this, "Address saved!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "✅ Address saved!", Toast.LENGTH_SHORT).show()
                 loadAddresses()
             }
             .addOnFailureListener {
                 Toast.makeText(this, "Failed to save address", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun updateAddress(id: String, label: String, fullName: String, addressLine: String, city: String, pincode: String, phone: String) {
+        if (uid == null) return
+        val data = hashMapOf(
+            "label"       to label,
+            "fullName"    to fullName,
+            "addressLine" to addressLine,
+            "city"        to city,
+            "pincode"     to pincode,
+            "phone"       to phone
+        )
+        db.collection("users").document(uid!!)
+            .collection("addresses").document(id)
+            .set(data)
+            .addOnSuccessListener {
+                Toast.makeText(this, "✅ Address updated!", Toast.LENGTH_SHORT).show()
+                loadAddresses()
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "Failed to update address", Toast.LENGTH_SHORT).show()
             }
     }
 
@@ -150,7 +197,8 @@ class AddressActivity : AppCompatActivity() {
 
     class AddressAdapter(
         private val items: List<AddressItem>,
-        private val onDelete: (AddressItem) -> Unit
+        private val onDelete: (AddressItem) -> Unit,
+        private val onEdit:   (AddressItem) -> Unit
     ) : RecyclerView.Adapter<AddressAdapter.ViewHolder>() {
 
         class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -158,6 +206,7 @@ class AddressActivity : AppCompatActivity() {
             val tvDetail: TextView  = view.findViewById(R.id.tvAddressDetail)
             val ivIcon:   ImageView = view.findViewById(R.id.ivAddressIcon)
             val btnDel:   ImageView = view.findViewById(R.id.ivAddressDelete)
+            val btnEdit:  ImageView? = view.findViewById(R.id.ivAddressEdit)
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
@@ -174,6 +223,10 @@ class AddressActivity : AppCompatActivity() {
                 else android.R.drawable.ic_menu_compass
             )
             holder.btnDel.setOnClickListener { onDelete(item) }
+            holder.btnEdit?.setOnClickListener { onEdit(item) }
+            // Also allow tapping the whole card to edit
+            holder.itemView.setOnClickListener { onEdit(item) }
         }
     }
 }
+

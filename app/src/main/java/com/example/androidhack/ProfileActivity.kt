@@ -29,6 +29,7 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var tvName: TextView
     private lateinit var tvEmail: TextView
     private lateinit var ivProfilePic: ImageView
+    private lateinit var tvInitials: TextView
 
     private val imagePicker = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         if (uri != null) {
@@ -41,9 +42,10 @@ class ProfileActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
 
-        tvName = findViewById(R.id.tvProfileName)
-        tvEmail = findViewById(R.id.tvProfileEmail)
+        tvName      = findViewById(R.id.tvProfileName)
+        tvEmail     = findViewById(R.id.tvProfileEmail)
         ivProfilePic = findViewById(R.id.ivProfilePicture)
+        tvInitials  = findViewById(R.id.tvProfileInitials)
 
         findViewById<TextView>(R.id.btnChangeProfilePicture).setOnClickListener {
             imagePicker.launch("image/*")
@@ -148,11 +150,25 @@ class ProfileActivity : AppCompatActivity() {
                 }
 
                 if (profileImageUrl.isNotEmpty()) {
+                    tvInitials.visibility = android.view.View.GONE
+                    ivProfilePic.visibility = android.view.View.VISIBLE
                     Glide.with(this).load(profileImageUrl.optimizeCloudinaryUrl()).centerCrop().into(ivProfilePic)
+                } else {
+                    // Show styled initials
+                    ivProfilePic.visibility = android.view.View.GONE
+                    tvInitials.visibility = android.view.View.VISIBLE
+                    val initials = name.split(" ")
+                        .take(2)
+                        .mapNotNull { it.firstOrNull()?.uppercaseChar() }
+                        .joinToString("")
+                    tvInitials.text = initials.ifEmpty { "?" }
                 }
             } else {
                 tvName.text = auth.currentUser?.displayName ?: "No Name"
                 tvEmail.text = auth.currentUser?.email ?: "No Email"
+                tvInitials.visibility = android.view.View.VISIBLE
+                ivProfilePic.visibility = android.view.View.GONE
+                tvInitials.text = auth.currentUser?.displayName?.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
             }
         }
     }

@@ -44,35 +44,46 @@
             android:textColor="#000000"
             android:textSize="18sp"
             android:textStyle="bold" />
+        <!-- Cart Button — same style as Home page -->
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="8dp"
             android:clipChildren="false"
             android:clipToPadding="false"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true">
-            <ImageView
+
+            <androidx.cardview.widget.CardView
                 android:id="@+id/ivCart"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_bag"
-                android:background="?attr/selectableItemBackgroundBorderless"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
                 android:clickable="true"
-                android:focusable="true"/>
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackgroundBorderless"
+                app:cardCornerRadius="21dp"
+                app:cardElevation="6dp"
+                app:cardBackgroundColor="#FFFFFF">
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_cart"
+                    app:tint="#7C4DFF" />
+            </androidx.cardview.widget.CardView>
+
             <TextView
                 android:id="@+id/tvCartBadge"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
                 android:background="@drawable/bg_badge_red"
                 android:textColor="#FFFFFF"
-                android:textSize="10sp"
+                android:textSize="9sp"
                 android:textStyle="bold"
                 android:gravity="center"
                 android:visibility="gone"
-                android:elevation="4dp"
-                android:translationX="6dp"
-                android:translationY="-6dp"
+                android:elevation="8dp"
+                android:translationX="4dp"
+                android:translationY="-4dp"
                 android:layout_alignTop="@id/ivCart"
                 android:layout_alignEnd="@id/ivCart" />
         </RelativeLayout>
@@ -148,14 +159,6 @@
             </LinearLayout>
         </HorizontalScrollView>
 
-        <ImageView
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_marginEnd="12dp"
-            android:padding="8dp"
-            android:background="@drawable/bg_chip_inactive"
-            android:src="@drawable/ic_settings"
-            app:tint="#000000"/>
     </LinearLayout>
 
     <!-- Brand Filter Row -->

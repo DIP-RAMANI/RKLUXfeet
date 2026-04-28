@@ -41,7 +41,7 @@ class WishlistActivity : AppCompatActivity() {
             finish()
         }
 
-        findViewById<ImageView>(R.id.ivCart)?.setOnClickListener {
+        findViewById<androidx.cardview.widget.CardView>(R.id.ivCart)?.setOnClickListener {
             startActivity(Intent(this, CartActivity::class.java))
         }
 
@@ -138,6 +138,9 @@ class WishlistActivity : AppCompatActivity() {
             val tvName: TextView  = view.findViewById(R.id.tvGridShoeName)
             val tvPrice: TextView = view.findViewById(R.id.tvGridShoePrice)
             val ivShoe: ImageView = view.findViewById(R.id.ivGridShoe)
+            val tvRating: TextView = view.findViewById(R.id.tvGridRating)
+            val tvSold: TextView   = view.findViewById(R.id.tvGridSold)
+            val btnAddToCart: TextView = view.findViewById(R.id.btnGridAddToCart)
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
@@ -150,8 +153,18 @@ class WishlistActivity : AppCompatActivity() {
             holder.tvName.text  = shoe.name
             holder.tvPrice.text = "₹${shoe.price.replace("₹", "").trim()}"
             Glide.with(holder.itemView.context).load(shoe.imageUrl.optimizeCloudinaryUrl())
-                .placeholder(R.drawable.shoesgreen3).centerCrop().into(holder.ivShoe)
+                .placeholder(R.drawable.shoesgreen3).fitCenter().into(holder.ivShoe)
             holder.itemView.setOnClickListener { onClick(shoe) }
+
+            // Deterministic rating & sold based on shoe ID hash (consistent across all screens)
+            val hash = shoe.id.hashCode().and(0x7FFFFFFF)
+            val fakeRating = 4.0 + (hash % 10) * 0.1
+            holder.tvRating.text = "⭐ ${String.format(java.util.Locale.US, "%.1f", fakeRating)}"
+            val fakeSold = 50 + (hash % 251)
+            holder.tvSold.text = "$fakeSold sold"
+
+            // Disable Add to Cart button in wishlist (just hide it)
+            holder.btnAddToCart.visibility = View.GONE
         }
     }
 }

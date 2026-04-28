@@ -88,6 +88,7 @@ class CheckoutActivity : AppCompatActivity(), PaymentResultListener {
         etPhone = findViewById(R.id.etPhone)
         rgPaymentMethod = findViewById(R.id.rgPaymentMethod)
 
+        findViewById<androidx.cardview.widget.CardView>(R.id.cvBackCheckout).setOnClickListener { finish() }
         findViewById<ImageView>(R.id.ivBackCheckout).setOnClickListener {
             finish()
         }
@@ -262,33 +263,26 @@ class CheckoutActivity : AppCompatActivity(), PaymentResultListener {
 
     private fun startRazorpayCheckout(name: String, phone: String, email: String) {
         val checkout = Checkout()
-        // Test Key. The user can replace this with their actual key.
-        checkout.setKeyID("YOURAPIKEY") 
+        checkout.setKeyID("rzp_test_SicrPUM68tp4tf")
+
+        val amountInPaise = Math.round(grandTotal * 100)
 
         try {
             val options = JSONObject()
             options.put("name", "RK LUX feet")
             options.put("description", "Premium Shoe Purchase")
-            options.put("image", "https://s3.amazonaws.com/rzp-mobile/images/rzp.png")
-            options.put("theme.color", "#D1F16B") // Brand color
+            options.put("theme.color", "#7C4DFF")
             options.put("currency", "INR")
-            // amount in paise (multiply by 100)
-            val amountInPaise = Math.round(grandTotal * 100).toString()
             options.put("amount", amountInPaise)
 
-            val retryObj = JSONObject()
-            retryObj.put("enabled", true)
-            retryObj.put("max_count", 4)
-            options.put("retry", retryObj)
-
             val prefill = JSONObject()
-            prefill.put("email", email)
-            prefill.put("contact", phone)
+            prefill.put("email", email.ifEmpty { "customer@rkluxfeet.com" })
+            prefill.put("contact", phone.ifEmpty { "9999999999" })
             options.put("prefill", prefill)
 
             checkout.open(this, options)
         } catch (e: Exception) {
-            Toast.makeText(this, "Error starting payment: ${e.message}", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_LONG).show()
             e.printStackTrace()
         }
     }

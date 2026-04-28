@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F8F7FF"
+    tools:context=".AdminNotificationsActivity">
+
+    <!-- Header -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clNotifHeader"
+        android:layout_width="match_parent"
+        android:layout_height="130dp"
+        android:background="#00897B"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/ivNotifBack"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="40dp"
+            android:src="@drawable/ic_arrow_back"
+            app:tint="#FFFFFF"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginStart="12dp"
+            app:layout_constraintStart_toEndOf="@id/ivNotifBack"
+            app:layout_constraintTop_toTopOf="@id/ivNotifBack"
+            app:layout_constraintBottom_toBottomOf="@id/ivNotifBack"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Send Notifications"
+                android:textColor="#FFFFFF"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-black" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Send offers &amp; promos to customers"
+                android:textColor="#B2DFDB"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Scrollable Content -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:paddingBottom="24dp"
+        app:layout_constraintTop_toBottomOf="@id/clNotifHeader"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <!-- Compose Section Title -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="✉️  Compose Notification"
+                android:textColor="#1A1A2E"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Notification Type Chips -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Type"
+                android:textColor="#555555"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/chipTypeOffer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="🏷️ Offer"
+                        android:gravity="center"
+                        android:paddingHorizontal="18dp"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:background="@drawable/bg_chip_active"
+                        android:textColor="#FFFFFF"
+                        android:layout_marginEnd="8dp" />
+
+                    <TextView
+                        android:id="@+id/chipTypePromo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="🎟️ Promo Code"
+                        android:gravity="center"
+                        android:paddingHorizontal="18dp"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:background="@drawable/bg_chip_inactive"
+                        android:textColor="#555555"
+                        android:layout_marginEnd="8dp" />
+
+                    <TextView
+                        android:id="@+id/chipTypeNewArrival"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="👟 New Arrival"
+                        android:gravity="center"
+                        android:paddingHorizontal="18dp"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:background="@drawable/bg_chip_inactive"
+                        android:textColor="#555555"
+                        android:layout_marginEnd="8dp" />
+
+                    <TextView
+                        android:id="@+id/chipTypeGeneral"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="📢 General"
+                        android:gravity="center"
+                        android:paddingHorizontal="18dp"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:background="@drawable/bg_chip_inactive"
+                        android:textColor="#555555"
+                        android:layout_marginEnd="8dp" />
+                </LinearLayout>
+            </HorizontalScrollView>
+
+            <!-- Title Input -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Title *"
+                android:textColor="#1A1A2E"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="6dp" />
+
+            <EditText
+                android:id="@+id/etNotifTitle"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:background="@drawable/bg_input_field"
+                android:hint="e.g. 🔥 Flash Sale This Weekend!"
+                android:paddingHorizontal="16dp"
+                android:textColor="#212121"
+                android:textColorHint="#9E9E9E"
+                android:textSize="14sp"
+                android:singleLine="true"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Message Input -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Message *"
+                android:textColor="#1A1A2E"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="6dp" />
+
+            <EditText
+                android:id="@+id/etNotifMessage"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:background="@drawable/bg_input_field"
+                android:hint="e.g. Get 50% off on all shoes! Use code FLASH50 at checkout. Limited time only!"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="12dp"
+                android:textColor="#212121"
+                android:textColorHint="#9E9E9E"
+                android:textSize="14sp"
+                android:gravity="top"
+                android:layout_marginBottom="20dp" />
+
+            <!-- Preview Card -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📱  Preview"
+                android:textColor="#555555"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cvPreview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="#FFFFFF"
+                android:layout_marginBottom="24dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="16dp"
+                    android:gravity="center_vertical">
+
+                    <!-- Icon Circle -->
+                    <FrameLayout
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:background="@drawable/bg_chip_active"
+                        android:layout_marginEnd="12dp">
+                        <TextView
+                            android:id="@+id/tvPreviewIcon"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text="🏷️"
+                            android:gravity="center"
+                            android:textSize="20sp" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tvPreviewTitle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Notification Title"
+                            android:textColor="#1A1A2E"
+                            android:textSize="15sp"
+                            android:textStyle="bold"
+                            android:maxLines="1"
+                            android:ellipsize="end" />
+
+                        <TextView
+                            android:id="@+id/tvPreviewMessage"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Your notification message will appear here..."
+                            android:textColor="#757575"
+                            android:textSize="13sp"
+                            android:maxLines="2"
+                            android:ellipsize="end"
+                            android:layout_marginTop="4dp" />
+
+                        <TextView
+                            android:id="@+id/tvPreviewType"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Offer"
+                            android:textColor="#00897B"
+                            android:textSize="11sp"
+                            android:textStyle="bold"
+                            android:layout_marginTop="4dp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Send Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSendNotification"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="🚀  Send Notification"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:backgroundTint="#00897B"
+                app:cornerRadius="16dp"
+                android:layout_marginBottom="32dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp" />
+
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#E0E0E0"
+                android:layout_marginBottom="20dp" />
+
+            <!-- History Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📋  Sent History"
+                android:textColor="#1A1A2E"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="12dp" />
+
+            <TextView
+                android:id="@+id/tvNoNotifications"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="No notifications sent yet"
+                android:textColor="#9E9E9E"
+                android:textSize="14sp"
+                android:gravity="center"
+                android:paddingVertical="40dp"
+                android:visibility="gone" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvNotificationHistory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                android:clipToPadding="false" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

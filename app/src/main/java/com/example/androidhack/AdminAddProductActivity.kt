@@ -20,6 +20,9 @@ class AdminAddProductActivity : AppCompatActivity() {
 
     private val db = FirebaseFirestore.getInstance()
 
+    private var editProductId: String? = null
+    private var existingImageUrls: List<String> = emptyList()
+
     // Up to 4 image URIs
     private val selectedUris = arrayOfNulls<Uri>(4)
 
@@ -76,15 +79,23 @@ class AdminAddProductActivity : AppCompatActivity() {
                 removeBtns[slot].visibility = View.GONE
             }
         }
+        
+        editProductId = intent.getStringExtra("productId")
+        if (editProductId != null) {
+            findViewById<Button>(R.id.btnSaveAdminProduct).text = "✅  Update Product"
+            loadProductData(editProductId!!)
+        }
 
         // Save button
         findViewById<Button>(R.id.btnSaveAdminProduct).setOnClickListener {
             val name     = findViewById<EditText>(R.id.etAdminProductName).text.toString().trim()
             val price    = findViewById<EditText>(R.id.etAdminProductPrice).text.toString().trim()
-            val desc     = findViewById<EditText>(R.id.etAdminProductDesc).text.toString().trim()
-            val specs    = findViewById<EditText>(R.id.etAdminProductSpecs).text.toString().trim()
+            val story    = findViewById<EditText>(R.id.etAdminProductStory).text.toString().trim()
+            val features = findViewById<EditText>(R.id.etAdminProductFeatures).text.toString().trim()
+            val details  = findViewById<EditText>(R.id.etAdminProductDetails).text.toString().trim()
             val brand    = findViewById<EditText>(R.id.etAdminProductBrand).text.toString().trim()
             val discount = findViewById<EditText>(R.id.etAdminProductDiscount).text.toString().trim().toIntOrNull() ?: 0
+            val inStock  = findViewById<android.widget.Switch>(R.id.swInStock).isChecked
 
             if (name.isEmpty() || price.isEmpty()) {
                 Toast.makeText(this, "Name and Price are required!", Toast.LENGTH_SHORT).show()
@@ -92,14 +103,53 @@ class AdminAddProductActivity : AppCompatActivity() {
             }
 
             val pickedCount = selectedUris.count { it != null }
-            if (pickedCount < 2) {
+            
+            // If editing and no new images selected, just update data
+            if (editProductId != null && pickedCount == 0 && existingImageUrls.isNotEmpty()) {
+                saveToFirestore(name, price, story, features, details, brand, discount, inStock, existingImageUrls)
+                return@setOnClickListener
+            }
+            
+            if (pickedCount < 2 && editProductId == null) {
                 Toast.makeText(this, "Please select at least 2 images!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
             // Upload all selected images and collect URLs
             val urisToUpload = selectedUris.filterNotNull()
-            uploadAllImages(name, price, desc, specs, brand, discount, urisToUpload)
+            uploadAllImages(name, price, story, features, details, brand, discount, inStock, urisToUpload)
+        }
+    }
+    
+    private fun loadProductData(id: String) {
+        db.collection("products").document(id).get().addOnSuccessListener { doc ->
+            if (doc.exists()) {
+                findViewById<EditText>(R.id.etAdminProductName).setText(doc.getString("name") ?: "")
+                findViewById<EditText>(R.id.etAdminProductPrice).setText(doc.getString("price") ?: "")
+                findViewById<EditText>(R.id.etAdminProductStory).setText(doc.getString("productStory") ?: "")
+                findViewById<EditText>(R.id.etAdminProductFeatures).setText(doc.getString("features") ?: "")
+                findViewById<EditText>(R.id.etAdminProductDetails).setText(doc.getString("details") ?: "")
+                findViewById<EditText>(R.id.etAdminProductBrand).setText(doc.getString("brand") ?: "")
+                
+                val discount = doc.getLong("discountPercent") ?: 0L
+                if (discount > 0) {
+                    findViewById<EditText>(R.id.etAdminProductDiscount).setText(discount.toString())
+                }
+                
+                val inStock = doc.getBoolean("inStock") ?: true
+                findViewById<android.widget.Switch>(R.id.swInStock).isChecked = inStock
+
+                val urls = (doc.get("imageUrls") as? List<*>)?.filterIsInstance<String>() ?: emptyList()
+                existingImageUrls = urls
+                
+                // Show existing images using Glide
+                urls.take(4).forEachIndexed { index, url ->
+                    previews[index].visibility = View.VISIBLE
+                    com.bumptech.glide.Glide.with(this).load(url).into(previews[index])
+                    // Hide remove button for existing images to keep UI simple
+                    removeBtns[index].visibility = View.GONE 
+                }
+            }
         }
     }
 
@@ -110,8 +160,8 @@ class AdminAddProductActivity : AppCompatActivity() {
     }
 
     private fun uploadAllImages(
-        name: String, price: String, desc: String, specs: String,
-        brand: String, discountPercent: Int,
+        name: String, price: String, story: String, features: String,
+        details: String, brand: String, discountPercent: Int, inStock: Boolean,
         uris: List<Uri>
     ) {
         Toast.makeText(this, "Uploading ${uris.size} image(s)...", Toast.LENGTH_LONG).show()
@@ -150,35 +200,52 @@ class AdminAddProductActivity : AppCompatActivity() {
                 if (errorMessage != null) {
                     Toast.makeText(this@AdminAddProductActivity, "Upload failed: $errorMessage", Toast.LENGTH_LONG).show()
                 } else {
-                    saveToFirestore(name, price, desc, specs, brand, discountPercent, uploadedUrls)
+                    saveToFirestore(name, price, story, features, details, brand, discountPercent, inStock, uploadedUrls)
                 }
             }
         }
     }
 
     private fun saveToFirestore(
-        name: String, price: String, desc: String, specs: String,
-        brand: String, discountPercent: Int,
+        name: String, price: String, story: String, features: String,
+        details: String, brand: String, discountPercent: Int, inStock: Boolean,
         imageUrls: List<String>
     ) {
         val product = hashMapOf(
             "name"            to name,
             "price"           to price,
-            "description"     to desc,
-            "specifications"  to specs,
+            "productStory"    to story,
+            "features"        to features,
+            "details"         to details,
+            // Backward compatibility: combine story + features into old description field
+            "description"     to story,
+            "specifications"  to features,
             "brand"           to brand.lowercase(),
             "discountPercent" to discountPercent,
+            "inStock"         to inStock,
             "imageUrl"        to (imageUrls.firstOrNull() ?: ""),   // backward-compat
             "imageUrls"       to imageUrls,
             "createdAt"       to com.google.firebase.Timestamp.now()
         )
-        db.collection("products").add(product)
-            .addOnSuccessListener {
-                Toast.makeText(this, "✅ Product saved with ${imageUrls.size} image(s)!", Toast.LENGTH_SHORT).show()
-                finish()
-            }
-            .addOnFailureListener { e ->
-                Toast.makeText(this, "Failed: ${e.message}", Toast.LENGTH_LONG).show()
-            }
+        
+        if (editProductId != null) {
+            db.collection("products").document(editProductId!!).set(product)
+                .addOnSuccessListener {
+                    Toast.makeText(this, "✅ Product updated!", Toast.LENGTH_SHORT).show()
+                    finish()
+                }
+                .addOnFailureListener { e ->
+                    Toast.makeText(this, "Failed: ${e.message}", Toast.LENGTH_LONG).show()
+                }
+        } else {
+            db.collection("products").add(product)
+                .addOnSuccessListener {
+                    Toast.makeText(this, "✅ Product saved with ${imageUrls.size} image(s)!", Toast.LENGTH_SHORT).show()
+                    finish()
+                }
+                .addOnFailureListener { e ->
+                    Toast.makeText(this, "Failed: ${e.message}", Toast.LENGTH_LONG).show()
+                }
+        }
     }
 }

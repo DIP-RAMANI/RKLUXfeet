@@ -37,6 +37,7 @@ class CartActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_cart)
 
+        findViewById<androidx.cardview.widget.CardView>(R.id.cvBackCart).setOnClickListener { finish() }
         findViewById<ImageView>(R.id.ivBackCart).setOnClickListener { finish() }
         findViewById<Button>(R.id.btnCheckoutCart).setOnClickListener {
             if (adapter.itemCount == 0) {
@@ -182,7 +183,7 @@ class CartActivity : AppCompatActivity() {
                 Glide.with(holder.itemView.context)
                     .load(item.imageUrl.optimizeCloudinaryUrl())
                     .placeholder(R.drawable.shoesgreen3)
-                    .centerCrop()
+                    .fitCenter()
                     .into(holder.ivItem)
             } else {
                 holder.ivItem.setImageResource(R.drawable.shoesgreen3)

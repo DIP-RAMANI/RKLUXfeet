@@ -42,21 +42,58 @@
             android:paddingHorizontal="20dp">
 
             <!-- Profile Picture -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="100dp"
-                android:layout_height="100dp"
+            <FrameLayout
+                android:layout_width="110dp"
+                android:layout_height="110dp"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="16dp"
-                app:cardCornerRadius="50dp"
-                app:cardElevation="4dp"
-                app:cardBackgroundColor="#EEEEEE">
-                <ImageView
-                    android:id="@+id/ivProfilePicture"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:src="@drawable/ic_person"
-                    android:scaleType="centerCrop" />
-            </androidx.cardview.widget.CardView>
+                android:layout_marginTop="16dp">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="110dp"
+                    android:layout_height="110dp"
+                    app:cardCornerRadius="55dp"
+                    app:cardElevation="6dp"
+                    app:cardBackgroundColor="#EDE7FF">
+
+                    <!-- Initials shown when no photo -->
+                    <TextView
+                        android:id="@+id/tvProfileInitials"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="?"
+                        android:textColor="#7C4DFF"
+                        android:textSize="36sp"
+                        android:textStyle="bold"
+                        android:fontFamily="sans-serif-medium" />
+
+                    <!-- Actual profile photo (overlays initials when loaded) -->
+                    <ImageView
+                        android:id="@+id/ivProfilePicture"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:visibility="gone" />
+
+                </androidx.cardview.widget.CardView>
+
+                <!-- Camera badge -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="bottom|end"
+                    app:cardCornerRadius="15dp"
+                    app:cardElevation="4dp"
+                    app:cardBackgroundColor="#7C4DFF">
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_edit"
+                        app:tint="#FFFFFF" />
+                </androidx.cardview.widget.CardView>
+
+            </FrameLayout>
 
             <!-- Name and Email -->
             <TextView

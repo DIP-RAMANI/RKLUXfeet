@@ -29,7 +29,10 @@ class StoreActivity : AppCompatActivity() {
         val popularity: Int = 0,
         val discountPercent: Int = 0,
         val description: String = "",
-        val specifications: String = ""
+        val specifications: String = "",
+        val productStory: String = "",
+        val features: String = "",
+        val details: String = ""
     )
 
     private lateinit var adapter: GridShoeAdapter
@@ -47,8 +50,8 @@ class StoreActivity : AppCompatActivity() {
         val tvCount = findViewById<TextView>(R.id.tvResultsCount)
 
         findViewById<ImageView>(R.id.ivBackStore).setOnClickListener { finish() }
-        findViewById<ImageView>(R.id.ivCart)?.setOnClickListener { 
-            startActivity(Intent(this, CartActivity::class.java)) 
+        findViewById<androidx.cardview.widget.CardView>(R.id.ivCart)?.setOnClickListener {
+            startActivity(Intent(this, CartActivity::class.java))
         }
 
         adapter = GridShoeAdapter(emptyList()) { shoe ->
@@ -60,6 +63,9 @@ class StoreActivity : AppCompatActivity() {
                 putStringArrayListExtra("productImageUrls", ArrayList(shoe.imageUrls.ifEmpty { listOf(shoe.imageUrl) }))
                 putExtra("productDesc",   shoe.description)
                 putExtra("productSpecs",  shoe.specifications)
+                putExtra("productStory",    shoe.productStory)
+                putExtra("productFeatures", shoe.features)
+                putExtra("productDetails",  shoe.details)
             }
             startActivity(intent)
         }
@@ -83,7 +89,10 @@ class StoreActivity : AppCompatActivity() {
                             popularity      = doc.getLong("popularity")?.toInt() ?: 0,
                             discountPercent = doc.getLong("discountPercent")?.toInt() ?: 0,
                             description     = doc.getString("description") ?: "",
-                            specifications  = doc.getString("specifications") ?: ""
+                            specifications  = doc.getString("specifications") ?: "",
+                            productStory    = doc.getString("productStory") ?: "",
+                            features        = doc.getString("features") ?: "",
+                            details         = doc.getString("details") ?: ""
                         )
                     }
                     if (allShoes.isEmpty()) {
@@ -149,6 +158,27 @@ class StoreActivity : AppCompatActivity() {
                 }, 150)
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        updateCartBadge()
+    }
+
+    private fun updateCartBadge() {
+        val uid = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val tvCartBadge = findViewById<android.widget.TextView>(R.id.tvCartBadge) ?: return
+        com.google.firebase.firestore.FirebaseFirestore.getInstance()
+            .collection("carts").document(uid).collection("items")
+            .addSnapshotListener { snapshot, _ ->
+                val count = snapshot?.size() ?: 0
+                if (count > 0) {
+                    tvCartBadge.visibility = android.view.View.VISIBLE
+                    tvCartBadge.text = count.toString()
+                } else {
+                    tvCartBadge.visibility = android.view.View.GONE
+                }
+            }
     }
 
     private fun setupChip(id: Int, sort: String) {
@@ -224,28 +254,7 @@ class StoreActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.tvResultsCount).text = "${filtered.size} results"
     }
 
-    // Adapter with click callback
-    override fun onResume() {
-        super.onResume()
-        updateCartBadge()
-    }
 
-    private fun updateCartBadge() {
-        val uid = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid ?: return
-        val tvCartBadge = findViewById<android.widget.TextView>(R.id.tvCartBadge)
-        com.google.firebase.firestore.FirebaseFirestore.getInstance()
-            .collection("carts").document(uid).collection("items")
-            .get()
-            .addOnSuccessListener { snapshot ->
-                val count = snapshot.size()
-                if (count > 0) {
-                    tvCartBadge.visibility = android.view.View.VISIBLE
-                    tvCartBadge.text = count.toString()
-                } else {
-                    tvCartBadge.visibility = android.view.View.GONE
-                }
-            }
-    }
 
     class GridShoeAdapter(
         private var shoes: List<Shoe>,
@@ -262,9 +271,11 @@ class StoreActivity : AppCompatActivity() {
             val tvPrice: TextView = view.findViewById(R.id.tvGridShoePrice)
             val ivShoe: ImageView = view.findViewById(R.id.ivGridShoe)
             val rlImageContainer: View = view.findViewById(R.id.rlGridImageContainer)
+            val cvBadge: androidx.cardview.widget.CardView = view.findViewById(R.id.cvGridBadge)
             val tvBadge: TextView = view.findViewById(R.id.tvGridBadge)
             val tvRating: TextView = view.findViewById(R.id.tvGridRating)
             val tvSold: TextView = view.findViewById(R.id.tvGridSold)
+            val btnAddToCart: TextView = view.findViewById(R.id.btnGridAddToCart)
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
@@ -284,34 +295,52 @@ class StoreActivity : AppCompatActivity() {
                 
             holder.itemView.setOnClickListener { onClick(shoe) }
 
-            val colors = arrayOf(
-                androidx.core.content.ContextCompat.getColor(holder.itemView.context, R.color.homePastelGreen),
-                androidx.core.content.ContextCompat.getColor(holder.itemView.context, R.color.homePastelPink),
-                androidx.core.content.ContextCompat.getColor(holder.itemView.context, R.color.homePastelBlue),
-                androidx.core.content.ContextCompat.getColor(holder.itemView.context, R.color.homePastelYellow)
-            )
-            // Use ID hash to keep colors consistent for the same item across layout refreshes
-            val colorIndex = Math.abs(shoe.id.hashCode()) % colors.size
-            holder.rlImageContainer.setBackgroundColor(colors[colorIndex])
+            // Clean white/grey background for all product images
+            holder.rlImageContainer.setBackgroundColor(android.graphics.Color.parseColor("#F9F9F9"))
 
             // Real discount badge from Firestore
             if (shoe.discountPercent > 0) {
-                holder.tvBadge.visibility = View.VISIBLE
+                holder.cvBadge.visibility = View.VISIBLE
                 holder.tvBadge.text = "-${shoe.discountPercent}%"
-                holder.tvBadge.setBackgroundColor(android.graphics.Color.parseColor("#FF3B30"))
+                holder.cvBadge.setCardBackgroundColor(android.graphics.Color.parseColor("#FF3B30"))
             } else if (position % 5 == 0) {
-                holder.tvBadge.visibility = View.VISIBLE
+                holder.cvBadge.visibility = View.VISIBLE
                 holder.tvBadge.text = "NEW"
-                holder.tvBadge.setBackgroundColor(android.graphics.Color.parseColor("#7C4DFF"))
+                holder.cvBadge.setCardBackgroundColor(android.graphics.Color.parseColor("#7C4DFF"))
             } else {
-                holder.tvBadge.visibility = View.GONE
+                holder.cvBadge.visibility = View.GONE
             }
 
-            // Fake rating & sold logic
-            val fakeRating = 4.0 + (5 - (position % 5)) * 0.1
+            // Deterministic rating & sold based on shoe ID hash (consistent across all screens)
+            val hash = shoe.id.hashCode().and(0x7FFFFFFF)
+            val fakeRating = 4.0 + (hash % 10) * 0.1
             holder.tvRating.text = "⭐ ${String.format(java.util.Locale.US, "%.1f", fakeRating)}"
-            val sold = 50 + (position * 12) % 300
-            holder.tvSold.text = " | $sold sold"
+            val sold = 50 + (hash % 251)
+            holder.tvSold.text = "$sold sold"
+
+            // Quick Add to Cart
+            holder.btnAddToCart.setOnClickListener {
+                val ctx = holder.itemView.context
+                val uid = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid
+                if (uid == null) {
+                    android.widget.Toast.makeText(ctx, "Please log in to add to cart", android.widget.Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+                val cartItem = hashMapOf(
+                    "name"     to shoe.name,
+                    "price"    to shoe.price,
+                    "imageUrl" to shoe.imageUrl,
+                    "quantity" to 1L,
+                    "size"     to "UK 8"
+                )
+                com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                    .collection("carts").document(uid)
+                    .collection("items").document(shoe.id)
+                    .set(cartItem)
+                    .addOnSuccessListener {
+                        android.widget.Toast.makeText(ctx, "✅ Added to cart!", android.widget.Toast.LENGTH_SHORT).show()
+                    }
+            }
         }
     }
 }

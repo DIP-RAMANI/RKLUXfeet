@@ -28,7 +28,10 @@ class HomeActivity : AppCompatActivity() {
         val imageUrl: String = "",
         val imageUrls: List<String> = emptyList(),
         val description: String = "",
-        val specifications: String = ""
+        val specifications: String = "",
+        val productStory: String = "",
+        val features: String = "",
+        val details: String = ""
     )
 
     // Banner images (4 local drawables)
@@ -139,6 +142,9 @@ class HomeActivity : AppCompatActivity() {
                 putStringArrayListExtra("productImageUrls", ArrayList(shoe.imageUrls.ifEmpty { listOf(shoe.imageUrl) }))
                 putExtra("productDesc",   shoe.description)
                 putExtra("productSpecs",  shoe.specifications)
+                putExtra("productStory",    shoe.productStory)
+                putExtra("productFeatures", shoe.features)
+                putExtra("productDetails",  shoe.details)
             }
             startActivity(intent)
         }
@@ -162,7 +168,10 @@ class HomeActivity : AppCompatActivity() {
                             imageUrl       = primary,
                             imageUrls      = urls.ifEmpty { if (primary.isNotEmpty()) listOf(primary) else emptyList() },
                             description    = doc.getString("description") ?: "",
-                            specifications = doc.getString("specifications") ?: ""
+                            specifications = doc.getString("specifications") ?: "",
+                            productStory   = doc.getString("productStory") ?: "",
+                            features       = doc.getString("features") ?: "",
+                            details        = doc.getString("details") ?: ""
                         )
                     }
                     // New Arrivals = last added (reversed)
@@ -284,8 +293,10 @@ class HomeActivity : AppCompatActivity() {
             val tvPrice: TextView = view.findViewById(R.id.tvShoePrice)
             val ivShoe: ImageView = view.findViewById(R.id.ivShoe)
             val rlImageContainer: View = view.findViewById(R.id.rlImageContainer)
+            val cvBadge: View = view.findViewById(R.id.cvBadge)
             val tvBadge: TextView = view.findViewById(R.id.tvBadge)
             val tvRating: TextView = view.findViewById(R.id.tvRating)
+            val tvSold: TextView = view.findViewById(R.id.tvSold)
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
@@ -302,30 +313,27 @@ class HomeActivity : AppCompatActivity() {
                 .load(shoe.imageUrl.optimizeCloudinaryUrl())
                 .placeholder(R.drawable.shoesgreen3)
                 .error(R.drawable.shoesgreen3)
-                .centerCrop()
+                .fitCenter()
                 .into(holder.ivShoe)
                 
             holder.itemView.setOnClickListener { onClick(shoe) }
 
             // Dynamic logic for UI enhancements
             if (isBestseller) {
-                holder.tvBadge.visibility = View.GONE
-                val colors = arrayOf(
-                    androidx.core.content.ContextCompat.getColor(holder.itemView.context, R.color.homePastelGreen),
-                    androidx.core.content.ContextCompat.getColor(holder.itemView.context, R.color.homePastelPink),
-                    androidx.core.content.ContextCompat.getColor(holder.itemView.context, R.color.homePastelBlue),
-                    androidx.core.content.ContextCompat.getColor(holder.itemView.context, R.color.homePastelYellow)
-                )
-                holder.rlImageContainer.setBackgroundColor(colors[position % colors.size])
+                holder.cvBadge.visibility = View.GONE
+                holder.rlImageContainer.setBackgroundColor(android.graphics.Color.parseColor("#F9F9F9"))
             } else {
-                holder.tvBadge.visibility = if (position < 3) View.VISIBLE else View.GONE
+                holder.cvBadge.visibility = if (position < 3) View.VISIBLE else View.GONE
                 holder.tvBadge.text = "NEW"
-                holder.rlImageContainer.setBackgroundColor(android.graphics.Color.parseColor("#F0F0F0"))
+                holder.rlImageContainer.setBackgroundColor(android.graphics.Color.parseColor("#F9F9F9"))
             }
 
-            // Fake rating logic
-            val fakeRating = 4.0 + (5 - (position % 5)) * 0.1
+            // Deterministic rating & sold based on shoe ID hash (consistent across all screens)
+            val hash = shoe.id.hashCode().and(0x7FFFFFFF)
+            val fakeRating = 4.0 + (hash % 10) * 0.1
             holder.tvRating.text = "⭐ ${String.format(java.util.Locale.US, "%.1f", fakeRating)}"
+            val fakeSold = 50 + (hash % 251)
+            holder.tvSold.text = " | $fakeSold sold"
         }
     }
 }

@@ -106,6 +106,57 @@ class ProductDetailsActivity : AppCompatActivity() {
                 tvSpecs.text = productSpecs
             }
 
+            // ── Product Story ───────────────────────────────
+            val productStory = intent.getStringExtra("productStory") ?: ""
+            val llProductStory = findViewById<LinearLayout>(R.id.llProductStory)
+            val tvProductStory = findViewById<TextView>(R.id.tvProductStory)
+            if (productStory.isNotBlank()) {
+                llProductStory.visibility = View.VISIBLE
+                tvProductStory.text = productStory
+            }
+
+            // ── Features & Benefits ─────────────────────────
+            val productFeatures = intent.getStringExtra("productFeatures") ?: ""
+            val llFeaturesDetails = findViewById<LinearLayout>(R.id.llFeaturesDetails)
+            val llFeatures = findViewById<LinearLayout>(R.id.llFeatures)
+            val tvProductFeatures = findViewById<TextView>(R.id.tvProductFeatures)
+            if (productFeatures.isNotBlank()) {
+                llFeaturesDetails.visibility = View.VISIBLE
+                llFeatures.visibility = View.VISIBLE
+                // Add bullet points to each line
+                val bulletFeatures = productFeatures.lines()
+                    .filter { it.isNotBlank() }
+                    .joinToString("\n") { "•  $it" }
+                tvProductFeatures.text = bulletFeatures
+            }
+
+            // ── Details ─────────────────────────────────────
+            val productDetails = intent.getStringExtra("productDetails") ?: ""
+            val llDetails = findViewById<LinearLayout>(R.id.llDetails)
+            val tvProductDetailsView = findViewById<TextView>(R.id.tvProductDetails)
+            if (productDetails.isNotBlank()) {
+                llFeaturesDetails.visibility = View.VISIBLE
+                llDetails.visibility = View.VISIBLE
+                // Add bullet points to each line
+                val bulletDetails = productDetails.lines()
+                    .filter { it.isNotBlank() }
+                    .joinToString("\n") { "•  $it" }
+                tvProductDetailsView.text = bulletDetails
+            }
+
+            // Hide legacy specs section if new fields are present
+            val llSpecs = findViewById<LinearLayout>(R.id.llSpecs)
+            val tvProductDescView = findViewById<TextView>(R.id.tvProductDesc)
+            
+            if (productStory.isNotBlank() || productFeatures.isNotBlank() || productDetails.isNotBlank()) {
+                llSpecs.visibility = View.GONE
+            }
+            
+            // Fix: Hide legacy description if it's the exact same as product story to prevent showing TWO TIMES
+            if (productStory.isNotBlank() && (productStory.trim() == productDesc.trim() || productDesc.isBlank() || productDesc == "No description available.")) {
+                tvProductDescView.visibility = View.GONE
+            }
+
             // ── Setup image ViewPager2 ───────────────────────────
             val vpImages    = findViewById<ViewPager2>(R.id.vpProductImages)
             val llDots      = findViewById<LinearLayout>(R.id.llImageDots)
@@ -217,12 +268,12 @@ class ProductDetailsActivity : AppCompatActivity() {
         override fun getItemCount() = urls.size
 
         override fun onBindViewHolder(holder: ImageVH, position: Int) {
-            holder.iv.scaleType = ImageView.ScaleType.CENTER_CROP
+            holder.iv.scaleType = ImageView.ScaleType.FIT_CENTER
             Glide.with(holder.iv.context)
                 .load(urls[position].optimizeCloudinaryUrl())
                 .placeholder(R.drawable.shoesgreen3)
                 .error(R.drawable.shoesgreen3)
-                .centerCrop()
+                .fitCenter()
                 .into(holder.iv)
         }
     }

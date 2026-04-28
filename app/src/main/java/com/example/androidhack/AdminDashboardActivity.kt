@@ -34,6 +34,9 @@ class AdminDashboardActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btnManagePromoCodes).setOnClickListener {
             startActivity(Intent(this, AdminPromoCodesActivity::class.java))
         }
+        findViewById<Button>(R.id.btnSendNotifications).setOnClickListener {
+            startActivity(Intent(this, AdminNotificationsActivity::class.java))
+        }
     }
 
     private fun loadStats() {

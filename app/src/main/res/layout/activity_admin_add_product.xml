@@ -61,25 +61,40 @@
                 android:inputType="numberDecimal"
                 android:layout_marginBottom="20dp" />
 
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Description" android:textColor="#000000" android:textStyle="bold" android:layout_marginBottom="6dp" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Product Story" android:textColor="#000000" android:textStyle="bold" android:layout_marginBottom="6dp" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="A narrative about the shoe (what it's built for, technology used)" android:textColor="#9E9E9E" android:textSize="11sp" android:layout_marginBottom="4dp" />
             <EditText
-                android:id="@+id/etAdminProductDesc"
+                android:id="@+id/etAdminProductStory"
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
+                android:layout_height="120dp"
                 android:background="#F5F5F5"
-                android:hint="Product description..."
+                android:hint="e.g. The Conduct Pro shoes are built for runners who want energy with every step. Powered by PROFOAM cushioning..."
                 android:paddingHorizontal="16dp"
                 android:paddingVertical="12dp"
                 android:gravity="top"
                 android:layout_marginBottom="20dp" />
 
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Specifications" android:textColor="#000000" android:textStyle="bold" android:layout_marginBottom="6dp" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Features &amp; Benefits" android:textColor="#000000" android:textStyle="bold" android:layout_marginBottom="6dp" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Enter each feature on a new line" android:textColor="#9E9E9E" android:textSize="11sp" android:layout_marginBottom="4dp" />
             <EditText
-                android:id="@+id/etAdminProductSpecs"
+                android:id="@+id/etAdminProductFeatures"
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
+                android:layout_height="120dp"
                 android:background="#F5F5F5"
-                android:hint="e.g. Sole: Rubber&#10;Material: Leather..."
+                android:hint="e.g.&#10;PROFOAM: Lightweight EVA for responsive cushioning&#10;PROPLATE: Added support with bold design impact&#10;SoftFoam+: Step in comfort and long lasting cushioning"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="12dp"
+                android:gravity="top"
+                android:layout_marginBottom="20dp" />
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Details" android:textColor="#000000" android:textStyle="bold" android:layout_marginBottom="6dp" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Enter each detail on a new line (e.g. Upper: Mesh, Closure: Laces)" android:textColor="#9E9E9E" android:textSize="11sp" android:layout_marginBottom="4dp" />
+            <EditText
+                android:id="@+id/etAdminProductDetails"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:background="#F5F5F5"
+                android:hint="e.g.&#10;Upper: Bootie construction with 2-tone material depth&#10;Outsole: PROTREAD full rubber coverage&#10;Closure: Laces&#10;Fit: Regular&#10;Toe: Rounded"
                 android:paddingHorizontal="16dp"
                 android:paddingVertical="12dp"
                 android:gravity="top"
@@ -93,6 +108,16 @@
                 android:background="#F5F5F5"
                 android:hint="e.g. Nike, Adidas, Puma, Asics"
                 android:paddingHorizontal="16dp"
+                android:layout_marginBottom="20dp" />
+
+            <Switch
+                android:id="@+id/swInStock"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="In Stock"
+                android:textColor="#000000"
+                android:textStyle="bold"
+                android:checked="true"
                 android:layout_marginBottom="20dp" />
 
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Discount % (optional, e.g. 20 for 20% off)" android:textColor="#000000" android:textStyle="bold" android:layout_marginBottom="6dp" />

@@ -24,10 +24,17 @@
             <!-- ═══════════════════════════════════════════ -->
             <!-- IMAGE AREA with ViewPager2 + dots            -->
             <!-- ═══════════════════════════════════════════ -->
-            <FrameLayout
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="340dp"
-                android:background="#EDE7FF">
+                android:layout_margin="16dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="8dp">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
                 <!-- Scrollable image pager -->
                 <androidx.viewpager2.widget.ViewPager2
@@ -84,7 +91,8 @@
                     android:orientation="horizontal"
                     android:gravity="center" />
 
-            </FrameLayout>
+                </FrameLayout>
+            </androidx.cardview.widget.CardView>
 
             <!-- ═══════════════════════════════════════════ -->
             <!-- PRODUCT INFO CARD                            -->
@@ -255,9 +263,129 @@
             </LinearLayout>
 
             <!-- ═══════════════════════════════════════════ -->
-            <!-- SPECIFICATIONS                               -->
+            <!-- PRODUCT STORY                               -->
             <!-- ═══════════════════════════════════════════ -->
             <LinearLayout
+                android:id="@+id/llProductStory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="20dp"
+                android:paddingTop="24dp"
+                android:paddingBottom="8dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="PRODUCT STORY"
+                    android:textColor="#000000"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.05" />
+
+                <View
+                    android:layout_width="40dp"
+                    android:layout_height="3dp"
+                    android:background="#7C4DFF"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="12dp" />
+
+                <TextView
+                    android:id="@+id/tvProductStory"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:lineSpacingExtra="5dp"
+                    android:textColor="#555555"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <!-- ═══════════════════════════════════════════ -->
+            <!-- FEATURES & BENEFITS + DETAILS              -->
+            <!-- ═══════════════════════════════════════════ -->
+            <LinearLayout
+                android:id="@+id/llFeaturesDetails"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="20dp"
+                android:paddingTop="20dp"
+                android:paddingBottom="8dp"
+                android:visibility="gone">
+
+                <!-- Features & Benefits -->
+                <LinearLayout
+                    android:id="@+id/llFeatures"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="20dp"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="FEATURES &amp; BENEFITS"
+                        android:textColor="#000000"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.05" />
+
+                    <View
+                        android:layout_width="40dp"
+                        android:layout_height="3dp"
+                        android:background="#7C4DFF"
+                        android:layout_marginTop="6dp"
+                        android:layout_marginBottom="12dp" />
+
+                    <TextView
+                        android:id="@+id/tvProductFeatures"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:lineSpacingExtra="6dp"
+                        android:textColor="#555555"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <!-- Details -->
+                <LinearLayout
+                    android:id="@+id/llDetails"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="DETAILS"
+                        android:textColor="#000000"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.05" />
+
+                    <View
+                        android:layout_width="40dp"
+                        android:layout_height="3dp"
+                        android:background="#7C4DFF"
+                        android:layout_marginTop="6dp"
+                        android:layout_marginBottom="12dp" />
+
+                    <TextView
+                        android:id="@+id/tvProductDetails"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:lineSpacingExtra="6dp"
+                        android:textColor="#555555"
+                        android:textSize="14sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ═══════════════════════════════════════════ -->
+            <!-- SPECIFICATIONS (legacy, kept for old data) -->
+            <!-- ═══════════════════════════════════════════ -->
+            <LinearLayout
+                android:id="@+id/llSpecs"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"

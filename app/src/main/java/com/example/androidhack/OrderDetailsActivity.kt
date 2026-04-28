@@ -72,9 +72,6 @@ class OrderDetailsActivity : AppCompatActivity() {
     private lateinit var ivTrackingShipped: ImageView
     private lateinit var ivTrackingDelivered: ImageView
 
-    // Rate Product button
-    private lateinit var btnRateProduct: android.widget.Button
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_order_details)
@@ -99,8 +96,6 @@ class OrderDetailsActivity : AppCompatActivity() {
         rvItems = findViewById(R.id.rvOrderDetailsItems)
         rvItems.layoutManager = LinearLayoutManager(this)
 
-        btnRateProduct = findViewById(R.id.btnRateProduct)
-
         findViewById<ImageView>(R.id.ivBackOrderDetails).setOnClickListener {
             val intent = Intent(this, HomeActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -110,7 +105,7 @@ class OrderDetailsActivity : AppCompatActivity() {
         
         findViewById<ImageView>(R.id.ivHelpOrderDetails).setOnClickListener {
             // Open WhatsApp with pre-filled support message
-            val phone = "91XXXXXXXXXX" // Replace with your WhatsApp support number
+            val phone = "919023382852" // Replace with your WhatsApp support number
             val message = "Hi RKLUXfeet Support! I need help with my order #$currentShortId"
             val uri = android.net.Uri.parse("https://wa.me/$phone?text=${android.net.Uri.encode(message)}")
             val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, uri)
@@ -396,120 +391,35 @@ class OrderDetailsActivity : AppCompatActivity() {
         val s = status.lowercase(Locale.getDefault())
         when {
             s.contains("deliv") || s.contains("complet") -> {
+                // Delivered (Green Badge)
                 tvOrderStatus.backgroundTintList = android.content.res.ColorStateList.valueOf(Color.parseColor("#4CAF50"))
+                // Timeline Shipped active
                 lineTracking1.setBackgroundColor(Color.parseColor("#FFB300"))
                 ivTrackingShipped.backgroundTintList = android.content.res.ColorStateList.valueOf(Color.parseColor("#4CAF50"))
+                // Timeline Delivered active
                 lineTracking2.setBackgroundColor(Color.parseColor("#4CAF50"))
                 ivTrackingDelivered.backgroundTintList = android.content.res.ColorStateList.valueOf(Color.parseColor("#4CAF50"))
-                // Show Rate button only for delivered orders
-                btnRateProduct.visibility = android.view.View.VISIBLE
-                btnRateProduct.setOnClickListener { showRatingDialog() }
             }
             s.contains("ship") || s.contains("dispatch") -> {
+                // Shipped (Orange Badge)
                 tvOrderStatus.backgroundTintList = android.content.res.ColorStateList.valueOf(Color.parseColor("#FF9800"))
+                // Timeline Shipped active
                 lineTracking1.setBackgroundColor(Color.parseColor("#FFB300"))
                 ivTrackingShipped.backgroundTintList = android.content.res.ColorStateList.valueOf(Color.parseColor("#FF9800"))
+                // Timeline Delivered inactive
                 lineTracking2.setBackgroundColor(Color.parseColor("#EEEEEE"))
                 ivTrackingDelivered.backgroundTintList = android.content.res.ColorStateList.valueOf(Color.parseColor("#EEEEEE"))
             }
             else -> {
+                // Pending (Yellow Badge)
                 tvOrderStatus.backgroundTintList = android.content.res.ColorStateList.valueOf(Color.parseColor("#FFB300"))
+                // Timeline all inactive
                 lineTracking1.setBackgroundColor(Color.parseColor("#EEEEEE"))
                 ivTrackingShipped.backgroundTintList = android.content.res.ColorStateList.valueOf(Color.parseColor("#EEEEEE"))
                 lineTracking2.setBackgroundColor(Color.parseColor("#EEEEEE"))
                 ivTrackingDelivered.backgroundTintList = android.content.res.ColorStateList.valueOf(Color.parseColor("#EEEEEE"))
             }
         }
-    }
-
-    /** Show a 1-5 star rating dialog. Saves review to Firestore for each item in the order. */
-    private fun showRatingDialog() {
-        if (currentItems.isEmpty()) {
-            Toast.makeText(this, "No items to rate.", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        // Build star buttons
-        val stars = arrayOf("⭐", "⭐⭐", "⭐⭐⭐", "⭐⭐⭐⭐", "⭐⭐⭐⭐⭐")
-        var selectedRating = 5
-
-        val layout = android.widget.LinearLayout(this).apply {
-            orientation = android.widget.LinearLayout.VERTICAL
-            setPadding(48, 32, 48, 16)
-        }
-
-        val tvLabel = android.widget.TextView(this).apply {
-            text = "How would you rate your purchase?"
-            textSize = 15f
-            setTextColor(Color.parseColor("#1A1A2E"))
-            typeface = android.graphics.Typeface.DEFAULT_BOLD
-        }
-        layout.addView(tvLabel)
-
-        val ratingBar = android.widget.RatingBar(this, null, android.R.attr.ratingBarStyle).apply {
-            numStars = 5
-            rating = 5f
-            stepSize = 1f
-            layoutParams = android.widget.LinearLayout.LayoutParams(
-                android.widget.LinearLayout.LayoutParams.WRAP_CONTENT,
-                android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
-            ).also { it.topMargin = 24 }
-        }
-        ratingBar.setOnRatingBarChangeListener { _, rating, _ ->
-            selectedRating = rating.toInt().coerceAtLeast(1)
-        }
-        layout.addView(ratingBar)
-
-        val etComment = android.widget.EditText(this).apply {
-            hint = "Write a comment (optional)"
-            minLines = 2
-            layoutParams = android.widget.LinearLayout.LayoutParams(
-                android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
-                android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
-            ).also { it.topMargin = 16 }
-        }
-        layout.addView(etComment)
-
-        android.app.AlertDialog.Builder(this)
-            .setTitle("Rate your Order")
-            .setView(layout)
-            .setPositiveButton("Submit") { _, _ ->
-                val comment = etComment.text.toString().trim()
-                val uid = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid ?: return@setPositiveButton
-
-                // Save review for each product in the order
-                currentItems.forEach { item ->
-                    if (item.id.isNotEmpty()) {
-                        val review = hashMapOf(
-                            "userId"    to uid,
-                            "orderId"   to currentOrderId,
-                            "rating"    to selectedRating,
-                            "comment"   to comment,
-                            "createdAt" to com.google.firebase.Timestamp.now()
-                        )
-                        val productRef = db.collection("products").document(item.id)
-                        // Save review in subcollection
-                        productRef.collection("reviews").add(review)
-                            .addOnSuccessListener {
-                                // Recalculate average rating
-                                productRef.collection("reviews").get()
-                                    .addOnSuccessListener { snapshot ->
-                                        val avg = snapshot.documents
-                                            .mapNotNull { it.getLong("rating")?.toDouble() }
-                                            .average()
-                                        if (!avg.isNaN()) {
-                                            productRef.update("avgRating", avg, "reviewCount", snapshot.size())
-                                        }
-                                    }
-                            }
-                    }
-                }
-                Toast.makeText(this, "Thank you for your review! ⭐", Toast.LENGTH_LONG).show()
-                btnRateProduct.isEnabled = false
-                btnRateProduct.text = "✅ Review Submitted"
-            }
-            .setNegativeButton("Cancel", null)
-            .show()
     }
 
     class OrderDetailAdapter(private val items: List<CartItem>) : RecyclerView.Adapter<OrderDetailAdapter.ViewHolder>() {
