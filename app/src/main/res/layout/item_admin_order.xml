@@ -130,75 +130,115 @@
             android:background="#F0EEFF"
             android:layout_marginBottom="12dp" />
 
-        <!-- Status Buttons -->
+        <!-- Status Buttons Row 1 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="4dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSetPending"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="34dp"
+                android:text="Pending"
+                android:textAllCaps="false"
+                android:textSize="9sp"
+                android:textStyle="bold"
+                android:backgroundTint="#FFECB3"
+                android:textColor="#E65100"
+                app:cornerRadius="8dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:layout_marginEnd="3dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSetConfirmed"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="34dp"
+                android:text="Confirm"
+                android:textAllCaps="false"
+                android:textSize="9sp"
+                android:textStyle="bold"
+                android:backgroundTint="#EDE7F6"
+                android:textColor="#5E35B1"
+                app:cornerRadius="8dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:layout_marginHorizontal="3dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSetShipped"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="34dp"
+                android:text="Shipped"
+                android:textAllCaps="false"
+                android:textSize="9sp"
+                android:textStyle="bold"
+                android:backgroundTint="#E3F2FD"
+                android:textColor="#1565C0"
+                app:cornerRadius="8dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:layout_marginStart="3dp" />
+        </LinearLayout>
+
+        <!-- Status Buttons Row 2 -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnSetPending"
+                android:id="@+id/btnSetOutForDelivery"
                 android:layout_width="0dp"
                 android:layout_weight="1"
-                android:layout_height="38dp"
-                android:text="Pending"
+                android:layout_height="34dp"
+                android:text="Out for Dlv"
                 android:textAllCaps="false"
-                android:textSize="10sp"
+                android:textSize="9sp"
                 android:textStyle="bold"
-                android:backgroundTint="#FFECB3"
-                android:textColor="#E65100"
-                app:cornerRadius="10dp"
+                android:backgroundTint="#E0F7FA"
+                android:textColor="#00838F"
+                app:cornerRadius="8dp"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
-                android:layout_marginEnd="4dp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnSetShipped"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="38dp"
-                android:text="Shipped"
-                android:textAllCaps="false"
-                android:textSize="10sp"
-                android:textStyle="bold"
-                android:backgroundTint="#E3F2FD"
-                android:textColor="#1565C0"
-                app:cornerRadius="10dp"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:layout_marginHorizontal="4dp" />
+                android:layout_marginEnd="3dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSetDelivered"
                 android:layout_width="0dp"
                 android:layout_weight="1"
-                android:layout_height="38dp"
+                android:layout_height="34dp"
                 android:text="Deliver"
                 android:textAllCaps="false"
-                android:textSize="10sp"
+                android:textSize="9sp"
                 android:textStyle="bold"
                 android:backgroundTint="#E8F5E9"
                 android:textColor="#2E7D32"
-                app:cornerRadius="10dp"
+                app:cornerRadius="8dp"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
-                android:layout_marginHorizontal="4dp" />
+                android:layout_marginHorizontal="3dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSetCancelled"
                 android:layout_width="0dp"
                 android:layout_weight="1"
-                android:layout_height="38dp"
+                android:layout_height="34dp"
                 android:text="Cancel"
                 android:textAllCaps="false"
-                android:textSize="10sp"
+                android:textSize="9sp"
                 android:textStyle="bold"
                 android:backgroundTint="#FFEBEE"
                 android:textColor="#C62828"
-                app:cornerRadius="10dp"
+                app:cornerRadius="8dp"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
-                android:layout_marginStart="4dp" />
+                android:layout_marginStart="3dp" />
         </LinearLayout>
 
     </LinearLayout>

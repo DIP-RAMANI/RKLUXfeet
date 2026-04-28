@@ -394,6 +394,27 @@
                 android:insetTop="0dp"
                 android:insetBottom="0dp" />
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnManageReturns"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:text="Manage Returns"
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#C62828"
+                app:icon="@android:drawable/ic_menu_revert"
+                app:iconTint="#C62828"
+                app:iconGravity="textStart"
+                app:backgroundTint="#FFFFFF"
+                app:strokeColor="#FFCDD2"
+                app:strokeWidth="1.5dp"
+                app:cornerRadius="16dp"
+                android:layout_marginBottom="12dp"
+                app:elevation="2dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp" />
+
         </LinearLayout>
     </ScrollView>
 

@@ -193,25 +193,65 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- ===== BANNER SLIDER ===== -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cvBanner"
+            <!-- ===== PROMOTIONAL BANNER SLIDER ===== -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/clBannerContainer"
                 android:layout_width="0dp"
-                android:layout_height="185dp"
+                android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="24dp"
-                app:cardCornerRadius="24dp"
-                app:cardElevation="6dp"
-                app:cardBackgroundColor="@color/homePastelPurple"
-                app:layout_constraintTop_toBottomOf="@id/cvSearch"
+                android:layout_marginTop="20dp"
+                app:layout_constraintTop_toBottomOf="@id/hsvCategories"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
 
-                <androidx.viewpager2.widget.ViewPager2
-                    android:id="@+id/vpBanner"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-            </androidx.cardview.widget.CardView>
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cvBanner"
+                    android:layout_width="0dp"
+                    android:layout_height="200dp"
+                    app:cardCornerRadius="24dp"
+                    app:cardElevation="8dp"
+                    app:cardBackgroundColor="#7C4DFF"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
+
+                    <androidx.viewpager2.widget.ViewPager2
+                        android:id="@+id/vpBanner"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </androidx.cardview.widget.CardView>
+
+                <!-- Left Arrow -->
+                <ImageView
+                    android:id="@+id/ivBannerLeft"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/ic_chevron_left"
+                    android:background="@drawable/bg_banner_badge"
+                    android:padding="4dp"
+                    android:layout_marginStart="8dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:layout_constraintStart_toStartOf="@id/cvBanner"
+                    app:layout_constraintTop_toTopOf="@id/cvBanner"
+                    app:layout_constraintBottom_toBottomOf="@id/cvBanner" />
+
+                <!-- Right Arrow -->
+                <ImageView
+                    android:id="@+id/ivBannerRight"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/ic_chevron_right"
+                    android:background="@drawable/bg_banner_badge"
+                    android:padding="4dp"
+                    android:layout_marginEnd="8dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:layout_constraintEnd_toEndOf="@id/cvBanner"
+                    app:layout_constraintTop_toTopOf="@id/cvBanner"
+                    app:layout_constraintBottom_toBottomOf="@id/cvBanner" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <!-- Banner Dots -->
             <LinearLayout
@@ -221,9 +261,188 @@
                 android:layout_marginTop="10dp"
                 android:orientation="horizontal"
                 android:gravity="center"
-                app:layout_constraintTop_toBottomOf="@id/cvBanner"
+                app:layout_constraintTop_toBottomOf="@id/clBannerContainer"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
+
+            <!-- ===== CATEGORY CHIPS ===== -->
+            <HorizontalScrollView
+                android:id="@+id/hsvCategories"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:scrollbars="none"
+                android:clipToPadding="false"
+                app:layout_constraintTop_toBottomOf="@id/cvSearch"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="20dp"
+                    android:gravity="center_vertical">
+
+                    <!-- All (selected by default) -->
+                    <LinearLayout
+                        android:id="@+id/catAll"
+                        android:layout_width="wrap_content"
+                        android:layout_height="38dp"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="14dp"
+                        android:background="@drawable/bg_cat_chip_selected"
+                        android:layout_marginEnd="10dp"
+                        android:clickable="true"
+                        android:focusable="true">
+                        <ImageView
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:src="@drawable/ic_grid_view"
+                            app:tint="#7C4DFF"
+                            android:layout_marginEnd="6dp" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="All"
+                            android:textSize="13sp"
+                            android:textColor="#7C4DFF"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <!-- Running -->
+                    <LinearLayout
+                        android:id="@+id/catRunning"
+                        android:layout_width="wrap_content"
+                        android:layout_height="38dp"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="14dp"
+                        android:background="@drawable/bg_cat_chip_unselected"
+                        android:layout_marginEnd="10dp"
+                        android:clickable="true"
+                        android:focusable="true">
+                        <ImageView
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:src="@drawable/ic_running"
+                            app:tint="#757575"
+                            android:layout_marginEnd="6dp" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Running"
+                            android:textSize="13sp"
+                            android:textColor="#424242" />
+                    </LinearLayout>
+
+                    <!-- Casual -->
+                    <LinearLayout
+                        android:id="@+id/catCasual"
+                        android:layout_width="wrap_content"
+                        android:layout_height="38dp"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="14dp"
+                        android:background="@drawable/bg_cat_chip_unselected"
+                        android:layout_marginEnd="10dp"
+                        android:clickable="true"
+                        android:focusable="true">
+                        <ImageView
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:src="@drawable/ic_casual"
+                            app:tint="#757575"
+                            android:layout_marginEnd="6dp" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Casual"
+                            android:textSize="13sp"
+                            android:textColor="#424242" />
+                    </LinearLayout>
+
+                    <!-- Sports -->
+                    <LinearLayout
+                        android:id="@+id/catSports"
+                        android:layout_width="wrap_content"
+                        android:layout_height="38dp"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="14dp"
+                        android:background="@drawable/bg_cat_chip_unselected"
+                        android:layout_marginEnd="10dp"
+                        android:clickable="true"
+                        android:focusable="true">
+                        <ImageView
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:src="@drawable/ic_sports"
+                            app:tint="#757575"
+                            android:layout_marginEnd="6dp" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Sports"
+                            android:textSize="13sp"
+                            android:textColor="#424242" />
+                    </LinearLayout>
+
+                    <!-- Formal -->
+                    <LinearLayout
+                        android:id="@+id/catFormal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="38dp"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="14dp"
+                        android:background="@drawable/bg_cat_chip_unselected"
+                        android:layout_marginEnd="10dp"
+                        android:clickable="true"
+                        android:focusable="true">
+                        <ImageView
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:src="@drawable/ic_formal"
+                            app:tint="#757575"
+                            android:layout_marginEnd="6dp" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Formal"
+                            android:textSize="13sp"
+                            android:textColor="#424242" />
+                    </LinearLayout>
+
+                    <!-- Outdoor -->
+                    <LinearLayout
+                        android:id="@+id/catOutdoor"
+                        android:layout_width="wrap_content"
+                        android:layout_height="38dp"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="14dp"
+                        android:background="@drawable/bg_cat_chip_unselected"
+                        android:layout_marginEnd="10dp"
+                        android:clickable="true"
+                        android:focusable="true">
+                        <ImageView
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:src="@drawable/ic_outdoor"
+                            app:tint="#757575"
+                            android:layout_marginEnd="6dp" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Outdoor"
+                            android:textSize="13sp"
+                            android:textColor="#424242" />
+                    </LinearLayout>
+
+                </LinearLayout>
+            </HorizontalScrollView>
 
             <!-- ===== NEW ARRIVALS ===== -->
             <RelativeLayout
@@ -312,6 +531,44 @@
                 android:orientation="horizontal"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintTop_toBottomOf="@id/rlBestsellers"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:listitem="@layout/item_shoe" />
+
+            <!-- ===== RECENTLY VIEWED ===== -->
+            <RelativeLayout
+                android:id="@+id/rlRecentlyViewed"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:paddingHorizontal="20dp"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@id/rvBestsellers"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Recently Viewed 🕒"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#212121"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true" />
+            </RelativeLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvRecentlyViewed"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="24dp"
+                android:clipToPadding="false"
+                android:paddingHorizontal="16dp"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintTop_toBottomOf="@id/rlRecentlyViewed"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 tools:listitem="@layout/item_shoe" />

@@ -37,6 +37,9 @@ class AdminDashboardActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btnSendNotifications).setOnClickListener {
             startActivity(Intent(this, AdminNotificationsActivity::class.java))
         }
+        findViewById<Button>(R.id.btnManageReturns).setOnClickListener {
+            startActivity(Intent(this, AdminReturnsActivity::class.java))
+        }
     }
 
     private fun loadStats() {

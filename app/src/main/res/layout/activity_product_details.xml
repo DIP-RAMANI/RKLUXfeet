@@ -260,6 +260,64 @@
                         android:focusable="true" />
 
                 </LinearLayout>
+
+                <!-- Size Guide + Find My Size buttons -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:id="@+id/btnSizeGuide"
+                        android:layout_width="0dp"
+                        android:layout_height="40dp"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="8dp"
+                        android:orientation="horizontal"
+                        android:gravity="center"
+                        android:background="@drawable/bg_size_guide_btn"
+                        android:clickable="true"
+                        android:focusable="true">
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_size_guide"
+                            android:layout_marginEnd="6dp" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Size Guide"
+                            android:textColor="#7C4DFF"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/btnFindMySize"
+                        android:layout_width="0dp"
+                        android:layout_height="40dp"
+                        android:layout_weight="1"
+                        android:orientation="horizontal"
+                        android:gravity="center"
+                        android:background="@drawable/bg_size_guide_btn"
+                        android:clickable="true"
+                        android:focusable="true">
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_size_finder"
+                            android:layout_marginEnd="6dp" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Find My Size"
+                            android:textColor="#7C4DFF"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </LinearLayout>
+
             </LinearLayout>
 
             <!-- ═══════════════════════════════════════════ -->
@@ -471,6 +529,113 @@
                         android:textStyle="bold"
                         android:visibility="gone" />
                 </LinearLayout>
+            </LinearLayout>
+
+            <!-- ═══════════════════════════════════════════ -->
+            <!-- REVIEWS SECTION                             -->
+            <!-- ═══════════════════════════════════════════ -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="20dp"
+                android:paddingTop="12dp"
+                android:paddingBottom="24dp">
+
+                <!-- Header: Reviews + Write Button -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Reviews"
+                            android:textColor="#000000"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:layout_marginTop="4dp">
+
+                            <TextView
+                                android:id="@+id/tvReviewAvgRating"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0.0"
+                                android:textColor="#FFB300"
+                                android:textSize="20sp"
+                                android:textStyle="bold" />
+
+                            <RatingBar
+                                android:id="@+id/rbAvgRating"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:numStars="5"
+                                android:rating="0"
+                                android:isIndicator="true"
+                                android:progressTint="#FFB300"
+                                android:progressBackgroundTint="#E0E0E0"
+                                android:layout_marginStart="6dp"
+                                style="?android:attr/ratingBarStyleSmall" />
+
+                            <TextView
+                                android:id="@+id/tvReviewCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="(0 reviews)"
+                                android:textColor="#9E9E9E"
+                                android:textSize="12sp"
+                                android:layout_marginStart="6dp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/btnWriteReview"
+                        android:layout_width="wrap_content"
+                        android:layout_height="38dp"
+                        android:gravity="center"
+                        android:paddingHorizontal="16dp"
+                        android:text="✍ Write Review"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textColor="#7C4DFF"
+                        android:background="@drawable/bg_write_review_btn" />
+                </LinearLayout>
+
+                <!-- Reviews List -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvReviews"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"
+                    android:clipToPadding="false" />
+
+                <!-- Empty state -->
+                <TextView
+                    android:id="@+id/tvNoReviews"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="No reviews yet. Be the first to review!"
+                    android:textColor="#BDBDBD"
+                    android:textSize="13sp"
+                    android:gravity="center"
+                    android:paddingVertical="20dp"
+                    android:visibility="visible" />
+
             </LinearLayout>
 
         </LinearLayout>

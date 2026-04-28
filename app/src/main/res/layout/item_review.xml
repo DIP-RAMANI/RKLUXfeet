@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
+    app:cardCornerRadius="14dp"
+    app:cardElevation="1dp"
+    app:cardBackgroundColor="#FFFFFF">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Top Row: Avatar + Name + Date + Delete -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="8dp">
+
+            <!-- Avatar -->
+            <ImageView
+                android:id="@+id/ivReviewAvatar"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="@drawable/bg_avatar_circle"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_person"
+                android:padding="6dp" />
+
+            <!-- Name + Date -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginStart="12dp">
+
+                <TextView
+                    android:id="@+id/tvReviewUserName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="User Name"
+                    android:textColor="#212121"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvReviewDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Apr 28, 2026"
+                    android:textColor="#9E9E9E"
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+            <!-- Delete button (admin only) -->
+            <ImageView
+                android:id="@+id/ivDeleteReview"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@drawable/ic_delete"
+                android:padding="4dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:visibility="gone"
+                app:tint="#E53935" />
+        </LinearLayout>
+
+        <!-- Star Rating -->
+        <RatingBar
+            android:id="@+id/rbReviewStars"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:numStars="5"
+            android:stepSize="1"
+            android:rating="5"
+            android:isIndicator="true"
+            android:progressTint="#FFB300"
+            android:progressBackgroundTint="#E0E0E0"
+            android:layout_marginBottom="8dp"
+            style="?android:attr/ratingBarStyleSmall" />
+
+        <!-- Comment -->
+        <TextView
+            android:id="@+id/tvReviewComment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Great product!"
+            android:textColor="#555555"
+            android:textSize="13sp"
+            android:lineSpacingExtra="3dp" />
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

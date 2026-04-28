@@ -31,15 +31,21 @@ class HomeActivity : AppCompatActivity() {
         val specifications: String = "",
         val productStory: String = "",
         val features: String = "",
-        val details: String = ""
+        val details: String = "",
+        val avgRating: Double = 0.0,
+        val reviewCount: Int = 0
     )
 
-    // Banner images (4 local drawables)
-    private val bannerImages = listOf(
-        R.drawable.shoes211,
-        R.drawable.shoes013,
-        R.drawable.shoes015,
-        R.drawable.shoesh1
+    // Banner promotional slides
+    data class BannerSlide(
+        val badge: String, val title: String, val discount: String,
+        val couponCode: String, val imageRes: Int
+    )
+    private val bannerSlides = listOf(
+        BannerSlide("🔥 Summer Sale", "Upgrade Your\nSneaker Game", "Up to 40% OFF", "SUMMER40", R.drawable.shoes211),
+        BannerSlide("⚡ Limited Offer", "Premium Running\nCollection", "Up to 30% OFF", "RUN30", R.drawable.shoes013),
+        BannerSlide("🎉 New Arrivals", "Step Into\nStyle Today", "Up to 25% OFF", "STYLE25", R.drawable.shoes015),
+        BannerSlide("💎 Exclusive", "Luxury Formal\nFootwear", "Up to 35% OFF", "FORMAL35", R.drawable.shoesh1)
     )
     private lateinit var vpBanner: ViewPager2
     private lateinit var llBannerDots: LinearLayout
@@ -47,11 +53,14 @@ class HomeActivity : AppCompatActivity() {
     private var currentBannerPage = 0
     private val bannerRunnable = object : Runnable {
         override fun run() {
-            currentBannerPage = (currentBannerPage + 1) % bannerImages.size
+            currentBannerPage = (currentBannerPage + 1) % bannerSlides.size
             vpBanner.setCurrentItem(currentBannerPage, true)
             bannerHandler.postDelayed(this, 5000)
         }
     }
+
+    private var allShoesList = listOf<Shoe>()
+    private lateinit var onShoeClickGlobal: (Shoe) -> Unit
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -99,7 +108,7 @@ class HomeActivity : AppCompatActivity() {
         }
 
         // Setup Banner Slider
-        vpBanner.adapter = BannerAdapter(bannerImages)
+        vpBanner.adapter = BannerAdapter(bannerSlides)
         setupBannerDots()
         bannerHandler.postDelayed(bannerRunnable, 3000)
 
@@ -109,6 +118,16 @@ class HomeActivity : AppCompatActivity() {
                 updateBannerDots(position)
             }
         })
+
+        // Banner arrow navigation
+        findViewById<ImageView>(R.id.ivBannerLeft).setOnClickListener {
+            currentBannerPage = if (currentBannerPage > 0) currentBannerPage - 1 else bannerSlides.size - 1
+            vpBanner.setCurrentItem(currentBannerPage, true)
+        }
+        findViewById<ImageView>(R.id.ivBannerRight).setOnClickListener {
+            currentBannerPage = (currentBannerPage + 1) % bannerSlides.size
+            vpBanner.setCurrentItem(currentBannerPage, true)
+        }
 
         // Cart button is now a CardView
         findViewById<androidx.cardview.widget.CardView>(R.id.ivCart).setOnClickListener {
@@ -133,7 +152,27 @@ class HomeActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        val onShoeClick: (Shoe) -> Unit = { shoe ->
+        // Category buttons → navigate to Store with type filter
+        val categoryMap = mapOf(
+            R.id.catRunning  to "running",
+            R.id.catCasual   to "casual",
+            R.id.catSports   to "sports",
+            R.id.catFormal   to "formal",
+            R.id.catOutdoor  to "outdoor"
+        )
+        categoryMap.forEach { (viewId, type) ->
+            findViewById<View>(viewId).setOnClickListener {
+                val intent = Intent(this, StoreActivity::class.java)
+                intent.putExtra("initial_type", type)
+                startActivity(intent)
+            }
+        }
+        // "All" chip → opens Store with no filter
+        findViewById<View>(R.id.catAll).setOnClickListener {
+            startActivity(Intent(this, StoreActivity::class.java))
+        }
+
+        onShoeClickGlobal = { shoe ->
             val intent = Intent(this, ProductDetailsActivity::class.java).apply {
                 putExtra("productId",     shoe.id)
                 putExtra("productName",   shoe.name)
@@ -149,8 +188,8 @@ class HomeActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        val newArrivalsAdapter = ShoeAdapter(emptyList(), onShoeClick, false)
-        val bestsellersAdapter = ShoeAdapter(emptyList(), onShoeClick, true)
+        val newArrivalsAdapter = ShoeAdapter(emptyList(), onShoeClickGlobal, false)
+        val bestsellersAdapter = ShoeAdapter(emptyList(), onShoeClickGlobal, true)
         rvNewArrivals.adapter = newArrivalsAdapter
         rvBestsellers.adapter = bestsellersAdapter
 
@@ -161,23 +200,31 @@ class HomeActivity : AppCompatActivity() {
                     val allShoes = snapshot.documents.map { doc ->
                         val urls = (doc.get("imageUrls") as? List<*>)?.filterIsInstance<String>() ?: emptyList()
                         val primary = doc.getString("imageUrl") ?: ""
+                        // Pick first non-video URL as thumbnail
+                        val thumbnailUrl = urls.firstOrNull { !it.endsWith(".mp4") && !it.endsWith(".mov") && !it.endsWith(".webm") }
+                            ?: if (!primary.endsWith(".mp4") && !primary.endsWith(".mov") && !primary.endsWith(".webm")) primary else ""
                         Shoe(
                             id             = doc.id,
                             name           = doc.getString("name") ?: "",
                             price          = doc.getString("price") ?: "",
-                            imageUrl       = primary,
+                            imageUrl       = thumbnailUrl,
                             imageUrls      = urls.ifEmpty { if (primary.isNotEmpty()) listOf(primary) else emptyList() },
                             description    = doc.getString("description") ?: "",
                             specifications = doc.getString("specifications") ?: "",
                             productStory   = doc.getString("productStory") ?: "",
                             features       = doc.getString("features") ?: "",
-                            details        = doc.getString("details") ?: ""
+                            details        = doc.getString("details") ?: "",
+                            avgRating      = doc.getDouble("avgRating") ?: 0.0,
+                            reviewCount    = doc.getLong("reviewCount")?.toInt() ?: 0
                         )
                     }
+                    allShoesList = allShoes
                     // New Arrivals = last added (reversed)
                     newArrivalsAdapter.updateData(allShoes.reversed().take(10))
                     // Bestsellers = first few (original order)
                     bestsellersAdapter.updateData(allShoes.take(10))
+                    
+                    loadRecentlyViewed()
                 } else {
                     // Fallback sample if no Firestore products yet
                     val fallback = listOf(
@@ -217,6 +264,36 @@ class HomeActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         updateCartBadge()
+        loadRecentlyViewed()
+    }
+
+    private fun loadRecentlyViewed() {
+        val prefs = getSharedPreferences("recently_viewed", android.content.Context.MODE_PRIVATE)
+        val recentStr = prefs.getString("ids", "") ?: ""
+        val rlRecentlyViewed = findViewById<android.view.View>(R.id.rlRecentlyViewed)
+        val rvRecentlyViewed = findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.rvRecentlyViewed)
+
+        if (recentStr.isEmpty() || allShoesList.isEmpty()) {
+            rlRecentlyViewed?.visibility = android.view.View.GONE
+            rvRecentlyViewed?.visibility = android.view.View.GONE
+            return
+        }
+
+        rlRecentlyViewed?.visibility = android.view.View.VISIBLE
+        rvRecentlyViewed?.visibility = android.view.View.VISIBLE
+
+        val recentIds = recentStr.split(",").filter { it.isNotEmpty() }
+
+        // Match IDs and keep order
+        val recentShoes = recentIds.mapNotNull { id -> allShoesList.find { it.id == id } }
+
+        var adapter = rvRecentlyViewed?.adapter as? ShoeAdapter
+        if (adapter == null) {
+            adapter = ShoeAdapter(recentShoes, onShoeClickGlobal, true)
+            rvRecentlyViewed?.adapter = adapter
+        } else {
+            adapter.updateData(recentShoes)
+        }
     }
 
     private fun updateCartBadge() {
@@ -238,17 +315,12 @@ class HomeActivity : AppCompatActivity() {
 
     private fun setupBannerDots() {
         llBannerDots.removeAllViews()
-        bannerImages.forEachIndexed { index, _ ->
+        bannerSlides.forEachIndexed { index, _ ->
             val dot = View(this).apply {
                 layoutParams = LinearLayout.LayoutParams(20, 20).also {
                     it.setMargins(6, 0, 6, 0)
                 }
-                background = if (index == 0)
-                    resources.getDrawable(android.R.drawable.btn_radio, null)
-                else null
-                setBackgroundColor(if (index == 0) Color.parseColor("#7C4DFF") else Color.parseColor("#D0D0D0"))
-                // Circular shape via code
-                this.background = android.graphics.drawable.GradientDrawable().apply {
+                background = android.graphics.drawable.GradientDrawable().apply {
                     shape = android.graphics.drawable.GradientDrawable.OVAL
                     setColor(if (index == 0) Color.parseColor("#7C4DFF") else Color.parseColor("#D0D0D0"))
                 }
@@ -266,17 +338,30 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
-    // Banner Adapter for ViewPager2
-    inner class BannerAdapter(private val images: List<Int>) :
+    // Promotional Banner Adapter for ViewPager2
+    inner class BannerAdapter(private val slides: List<BannerSlide>) :
         RecyclerView.Adapter<BannerAdapter.BannerViewHolder>() {
         inner class BannerViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             val ivSlide: ImageView = view.findViewById(R.id.ivBannerSlide)
+            val tvBadge: TextView = view.findViewById(R.id.tvBannerBadge)
+            val tvTitle: TextView = view.findViewById(R.id.tvBannerTitle)
+            val tvDiscount: TextView = view.findViewById(R.id.tvBannerDiscount)
+            val tvCoupon: TextView = view.findViewById(R.id.tvCouponCode)
+            val btnShopNow: TextView = view.findViewById(R.id.btnShopNow)
         }
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
             BannerViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_banner_slide, parent, false))
-        override fun getItemCount() = images.size
+        override fun getItemCount() = slides.size
         override fun onBindViewHolder(holder: BannerViewHolder, position: Int) {
-            holder.ivSlide.setImageResource(images[position])
+            val slide = slides[position]
+            holder.ivSlide.setImageResource(slide.imageRes)
+            holder.tvBadge.text = slide.badge
+            holder.tvTitle.text = slide.title
+            holder.tvDiscount.text = slide.discount
+            holder.tvCoupon.text = slide.couponCode
+            holder.btnShopNow.setOnClickListener {
+                startActivity(Intent(this@HomeActivity, StoreActivity::class.java))
+            }
         }
     }
 
@@ -328,12 +413,14 @@ class HomeActivity : AppCompatActivity() {
                 holder.rlImageContainer.setBackgroundColor(android.graphics.Color.parseColor("#F9F9F9"))
             }
 
-            // Deterministic rating & sold based on shoe ID hash (consistent across all screens)
-            val hash = shoe.id.hashCode().and(0x7FFFFFFF)
-            val fakeRating = 4.0 + (hash % 10) * 0.1
-            holder.tvRating.text = "⭐ ${String.format(java.util.Locale.US, "%.1f", fakeRating)}"
-            val fakeSold = 50 + (hash % 251)
-            holder.tvSold.text = " | $fakeSold sold"
+            // Real rating from Firestore reviews
+            if (shoe.reviewCount > 0) {
+                holder.tvRating.text = "⭐ ${String.format(java.util.Locale.US, "%.1f", shoe.avgRating)}"
+                holder.tvSold.text = " | ${shoe.reviewCount} reviews"
+            } else {
+                holder.tvRating.text = "⭐ New"
+                holder.tvSold.text = ""
+            }
         }
     }
 }

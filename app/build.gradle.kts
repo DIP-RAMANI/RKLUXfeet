@@ -73,4 +73,8 @@ dependencies {
 
     // Firebase Cloud Messaging (Push Notifications)
     implementation("com.google.firebase:firebase-messaging")
+
+    // Media3 (ExoPlayer) for Video Support
+    implementation("androidx.media3:media3-exoplayer:1.2.1")
+    implementation("androidx.media3:media3-ui:1.2.1")
 }

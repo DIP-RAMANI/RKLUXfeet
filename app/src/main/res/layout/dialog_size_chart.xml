@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_bottom_sheet"
+    android:padding="24dp">
+
+    <!-- Handle bar -->
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/bg_chip_inactive" />
+
+    <!-- Title -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="📏 Size Guide"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#1A1A2E"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Brand Tabs -->
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none"
+        android:layout_marginBottom="20dp">
+
+        <LinearLayout
+            android:id="@+id/llBrandTabs"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tabNike"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:gravity="center"
+                android:paddingHorizontal="16dp"
+                android:text="Nike"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:background="@drawable/bg_brand_tab_active"
+                android:layout_marginEnd="8dp" />
+
+            <TextView
+                android:id="@+id/tabAdidas"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:gravity="center"
+                android:paddingHorizontal="16dp"
+                android:text="Adidas"
+                android:textSize="13sp"
+                android:textColor="#757575"
+                android:background="@drawable/bg_brand_tab_inactive"
+                android:layout_marginEnd="8dp" />
+
+            <TextView
+                android:id="@+id/tabPuma"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:gravity="center"
+                android:paddingHorizontal="16dp"
+                android:text="Puma"
+                android:textSize="13sp"
+                android:textColor="#757575"
+                android:background="@drawable/bg_brand_tab_inactive"
+                android:layout_marginEnd="8dp" />
+
+            <TextView
+                android:id="@+id/tabAsics"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:gravity="center"
+                android:paddingHorizontal="16dp"
+                android:text="Asics"
+                android:textSize="13sp"
+                android:textColor="#757575"
+                android:background="@drawable/bg_brand_tab_inactive"
+                android:layout_marginEnd="8dp" />
+
+            <TextView
+                android:id="@+id/tabGeneric"
+                android:layout_width="wrap_content"
+                android:layout_height="34dp"
+                android:gravity="center"
+                android:paddingHorizontal="16dp"
+                android:text="Generic"
+                android:textSize="13sp"
+                android:textColor="#757575"
+                android:background="@drawable/bg_brand_tab_inactive" />
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <!-- Unit Toggle -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="12dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Measurements in: "
+            android:textSize="12sp"
+            android:textColor="#757575" />
+        <TextView
+            android:id="@+id/tvUnitToggle"
+            android:layout_width="wrap_content"
+            android:layout_height="28dp"
+            android:gravity="center"
+            android:paddingHorizontal="14dp"
+            android:text="CM"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="#7C4DFF"
+            android:background="@drawable/bg_size_guide_btn" />
+    </LinearLayout>
+
+    <!-- Table Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:orientation="horizontal"
+        android:background="#F3EDFF"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="8dp">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="UK"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:textColor="#7C4DFF"
+            android:gravity="center" />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="US"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:textColor="#7C4DFF"
+            android:gravity="center" />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="EU"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:textColor="#7C4DFF"
+            android:gravity="center" />
+        <TextView
+            android:id="@+id/tvLengthHeader"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="CM"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:textColor="#7C4DFF"
+            android:gravity="center" />
+    </LinearLayout>
+
+    <!-- Table Body (dynamically populated) -->
+    <LinearLayout
+        android:id="@+id/llSizeTableBody"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" />
+
+    <!-- Tip -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="💡 Tip: Sizes may vary slightly between brands. When in between sizes, we recommend going up."
+        android:textColor="#757575"
+        android:textSize="12sp"
+        android:lineSpacingExtra="3dp" />
+
+</LinearLayout>

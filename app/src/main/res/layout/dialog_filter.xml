@@ -1,0 +1,535 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_bottom_sheet"
+    android:padding="24dp">
+
+    <!-- Handle bar -->
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/bg_chip_inactive" />
+
+    <!-- Title Row -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Filters"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="#1A1A2E"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true" />
+        <TextView
+            android:id="@+id/tvResetFilters"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Reset All"
+            android:textSize="14sp"
+            android:textColor="#7C4DFF"
+            android:textStyle="bold"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:padding="4dp" />
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- ===== SORT BY ===== -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sort By"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="#424242"
+                android:layout_marginBottom="12dp" />
+
+            <!-- Sort Row 1 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="8dp">
+                <TextView
+                    android:id="@+id/chipAll"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:text="All"
+                    android:gravity="center"
+                    android:paddingHorizontal="20dp"
+                    android:textSize="13sp"
+                    android:background="@drawable/bg_filter_chip_selected"
+                    android:textColor="#FFFFFF"
+                    android:layout_marginEnd="8dp" />
+                <TextView
+                    android:id="@+id/chipPriceLow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:text="Price: Low→High"
+                    android:gravity="center"
+                    android:paddingHorizontal="20dp"
+                    android:textSize="13sp"
+                    android:background="@drawable/bg_filter_chip"
+                    android:textColor="#424242"
+                    android:layout_marginEnd="8dp" />
+                <TextView
+                    android:id="@+id/chipPriceHigh"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:text="Price: High→Low"
+                    android:gravity="center"
+                    android:paddingHorizontal="20dp"
+                    android:textSize="13sp"
+                    android:background="@drawable/bg_filter_chip"
+                    android:textColor="#424242" />
+            </LinearLayout>
+
+            <!-- Sort Row 2 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="24dp">
+                <TextView
+                    android:id="@+id/chipNewArrivals"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:text="New Arrivals"
+                    android:gravity="center"
+                    android:paddingHorizontal="20dp"
+                    android:textSize="13sp"
+                    android:background="@drawable/bg_filter_chip"
+                    android:textColor="#424242"
+                    android:layout_marginEnd="8dp" />
+                <TextView
+                    android:id="@+id/chipBestseller"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:text="Bestsellers"
+                    android:gravity="center"
+                    android:paddingHorizontal="20dp"
+                    android:textSize="13sp"
+                    android:background="@drawable/bg_filter_chip"
+                    android:textColor="#424242" />
+            </LinearLayout>
+
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#F0F0F0"
+                android:layout_marginBottom="20dp" />
+
+            <!-- ===== BRAND ===== -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Brand"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="#424242"
+                android:layout_marginBottom="12dp" />
+
+            <!-- Brand Row 1: All Brands, Nike, Adidas -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="8dp">
+
+                <!-- All Brands -->
+                <LinearLayout
+                    android:id="@+id/chipBrandAll"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="14dp"
+                    android:background="@drawable/bg_filter_chip_selected"
+                    android:layout_marginEnd="8dp">
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/ic_grid_view"
+                        app:tint="#FFFFFF"
+                        android:layout_marginEnd="6dp" />
+                    <TextView
+                        android:id="@+id/tvChipBrandAll"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="All Brands"
+                        android:textSize="13sp"
+                        android:textColor="#FFFFFF" />
+                </LinearLayout>
+
+                <!-- Nike -->
+                <LinearLayout
+                    android:id="@+id/chipBrandNike"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="14dp"
+                    android:background="@drawable/bg_filter_chip"
+                    android:layout_marginEnd="8dp">
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:src="@drawable/nike"
+                        android:scaleType="fitCenter"
+                        android:layout_marginEnd="6dp" />
+                    <TextView
+                        android:id="@+id/tvChipBrandNike"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Nike"
+                        android:textSize="13sp"
+                        android:textColor="#424242" />
+                </LinearLayout>
+
+                <!-- Adidas -->
+                <LinearLayout
+                    android:id="@+id/chipBrandAdidas"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="14dp"
+                    android:background="@drawable/bg_filter_chip">
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:src="@drawable/adidas"
+                        android:scaleType="fitCenter"
+                        android:layout_marginEnd="6dp" />
+                    <TextView
+                        android:id="@+id/tvChipBrandAdidas"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Adidas"
+                        android:textSize="13sp"
+                        android:textColor="#424242" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Brand Row 2: Puma, Asics, Others -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="24dp">
+
+                <!-- Puma -->
+                <LinearLayout
+                    android:id="@+id/chipBrandPuma"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="14dp"
+                    android:background="@drawable/bg_filter_chip"
+                    android:layout_marginEnd="8dp">
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:src="@drawable/puma"
+                        android:scaleType="fitCenter"
+                        android:layout_marginEnd="6dp" />
+                    <TextView
+                        android:id="@+id/tvChipBrandPuma"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Puma"
+                        android:textSize="13sp"
+                        android:textColor="#424242" />
+                </LinearLayout>
+
+                <!-- Asics -->
+                <LinearLayout
+                    android:id="@+id/chipBrandAsics"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="14dp"
+                    android:background="@drawable/bg_filter_chip"
+                    android:layout_marginEnd="8dp">
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:src="@drawable/asics"
+                        android:scaleType="fitCenter"
+                        android:layout_marginEnd="6dp" />
+                    <TextView
+                        android:id="@+id/tvChipBrandAsics"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Asics"
+                        android:textSize="13sp"
+                        android:textColor="#424242" />
+                </LinearLayout>
+
+                <!-- Others -->
+                <LinearLayout
+                    android:id="@+id/chipBrandOther"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="14dp"
+                    android:background="@drawable/bg_filter_chip">
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/ic_more_horiz"
+                        app:tint="#757575"
+                        android:layout_marginEnd="6dp" />
+                    <TextView
+                        android:id="@+id/tvChipBrandOther"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Others"
+                        android:textSize="13sp"
+                        android:textColor="#424242" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#F0F0F0"
+                android:layout_marginBottom="20dp" />
+
+            <!-- ===== SHOE TYPE ===== -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Shoe Type"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="#424242"
+                android:layout_marginBottom="12dp" />
+
+            <!-- Type Row 1: All, Running, Casual, Formal -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="8dp">
+
+                <!-- All Types -->
+                <LinearLayout
+                    android:id="@+id/chipTypeAll"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="14dp"
+                    android:background="@drawable/bg_filter_chip_selected"
+                    android:layout_marginEnd="8dp">
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/ic_grid_view"
+                        app:tint="#FFFFFF"
+                        android:layout_marginEnd="6dp" />
+                    <TextView
+                        android:id="@+id/tvChipTypeAll"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="All Types"
+                        android:textSize="13sp"
+                        android:textColor="#FFFFFF" />
+                </LinearLayout>
+
+                <!-- Running -->
+                <LinearLayout
+                    android:id="@+id/chipTypeRunning"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="14dp"
+                    android:background="@drawable/bg_filter_chip"
+                    android:layout_marginEnd="8dp">
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/ic_running"
+                        app:tint="#757575"
+                        android:layout_marginEnd="6dp" />
+                    <TextView
+                        android:id="@+id/tvChipTypeRunning"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Running"
+                        android:textSize="13sp"
+                        android:textColor="#424242" />
+                </LinearLayout>
+
+                <!-- Casual -->
+                <LinearLayout
+                    android:id="@+id/chipTypeCasual"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="14dp"
+                    android:background="@drawable/bg_filter_chip"
+                    android:layout_marginEnd="8dp">
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/ic_casual"
+                        app:tint="#757575"
+                        android:layout_marginEnd="6dp" />
+                    <TextView
+                        android:id="@+id/tvChipTypeCasual"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Casual"
+                        android:textSize="13sp"
+                        android:textColor="#424242" />
+                </LinearLayout>
+
+                <!-- Formal -->
+                <LinearLayout
+                    android:id="@+id/chipTypeFormal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="14dp"
+                    android:background="@drawable/bg_filter_chip">
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/ic_formal"
+                        app:tint="#757575"
+                        android:layout_marginEnd="6dp" />
+                    <TextView
+                        android:id="@+id/tvChipTypeFormal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Formal"
+                        android:textSize="13sp"
+                        android:textColor="#424242" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Type Row 2: Sports, Sneakers, Loafers -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+
+                <!-- Sports -->
+                <LinearLayout
+                    android:id="@+id/chipTypeSports"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="14dp"
+                    android:background="@drawable/bg_filter_chip"
+                    android:layout_marginEnd="8dp">
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/ic_sports"
+                        app:tint="#757575"
+                        android:layout_marginEnd="6dp" />
+                    <TextView
+                        android:id="@+id/tvChipTypeSports"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Sports"
+                        android:textSize="13sp"
+                        android:textColor="#424242" />
+                </LinearLayout>
+
+                <!-- Sneakers -->
+                <LinearLayout
+                    android:id="@+id/chipTypeSneakers"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="14dp"
+                    android:background="@drawable/bg_filter_chip"
+                    android:layout_marginEnd="8dp">
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/ic_sneakers"
+                        app:tint="#757575"
+                        android:layout_marginEnd="6dp" />
+                    <TextView
+                        android:id="@+id/tvChipTypeSneakers"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Sneakers"
+                        android:textSize="13sp"
+                        android:textColor="#424242" />
+                </LinearLayout>
+
+                <!-- Loafers -->
+                <LinearLayout
+                    android:id="@+id/chipTypeLoafers"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="14dp"
+                    android:background="@drawable/bg_filter_chip">
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/ic_loafers"
+                        app:tint="#757575"
+                        android:layout_marginEnd="6dp" />
+                    <TextView
+                        android:id="@+id/tvChipTypeLoafers"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Loafers"
+                        android:textSize="13sp"
+                        android:textColor="#424242" />
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Apply Button -->
+    <Button
+        android:id="@+id/btnApplyFilters"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_marginTop="16dp"
+        android:text="Apply Filters"
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:backgroundTint="#7C4DFF" />
+
+</LinearLayout>

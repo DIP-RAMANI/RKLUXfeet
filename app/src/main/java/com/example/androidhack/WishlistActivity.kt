@@ -23,7 +23,9 @@ class WishlistActivity : AppCompatActivity() {
         val price: String = "", 
         val imageUrl: String = "",
         val description: String = "",
-        val specifications: String = ""
+        val specifications: String = "",
+        val avgRating: Double = 0.0,
+        val reviewCount: Int = 0
     )
 
     private val db  = FirebaseFirestore.getInstance()
@@ -79,6 +81,26 @@ class WishlistActivity : AppCompatActivity() {
                         }
                         adapter.updateData(shoes)
                         tvEmpty?.visibility = if (shoes.isEmpty()) View.VISIBLE else View.GONE
+
+                        // Fetch real ratings from products collection
+                        for ((index, shoe) in shoes.withIndex()) {
+                            if (shoe.id.isNotEmpty()) {
+                                db.collection("products").document(shoe.id).get()
+                                    .addOnSuccessListener { productDoc ->
+                                        val avgRating = productDoc.getDouble("avgRating") ?: 0.0
+                                        val reviewCount = productDoc.getLong("reviewCount")?.toInt() ?: 0
+                                        if (avgRating > 0 || reviewCount > 0) {
+                                            val updated = shoe.copy(avgRating = avgRating, reviewCount = reviewCount)
+                                            val mutableList = adapter.getShoes().toMutableList()
+                                            val pos = mutableList.indexOfFirst { it.id == shoe.id }
+                                            if (pos >= 0) {
+                                                mutableList[pos] = updated
+                                                adapter.updateData(mutableList)
+                                            }
+                                        }
+                                    }
+                            }
+                        }
                     }
                 }
         } else {
@@ -148,6 +170,8 @@ class WishlistActivity : AppCompatActivity() {
 
         override fun getItemCount() = shoes.size
 
+        fun getShoes(): List<Shoe> = shoes
+
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val shoe = shoes[position]
             holder.tvName.text  = shoe.name
@@ -156,12 +180,14 @@ class WishlistActivity : AppCompatActivity() {
                 .placeholder(R.drawable.shoesgreen3).fitCenter().into(holder.ivShoe)
             holder.itemView.setOnClickListener { onClick(shoe) }
 
-            // Deterministic rating & sold based on shoe ID hash (consistent across all screens)
-            val hash = shoe.id.hashCode().and(0x7FFFFFFF)
-            val fakeRating = 4.0 + (hash % 10) * 0.1
-            holder.tvRating.text = "⭐ ${String.format(java.util.Locale.US, "%.1f", fakeRating)}"
-            val fakeSold = 50 + (hash % 251)
-            holder.tvSold.text = "$fakeSold sold"
+            // Real rating from Firestore reviews
+            if (shoe.reviewCount > 0) {
+                holder.tvRating.text = "⭐ ${String.format(java.util.Locale.US, "%.1f", shoe.avgRating)}"
+                holder.tvSold.text = "${shoe.reviewCount} reviews"
+            } else {
+                holder.tvRating.text = "⭐ New"
+                holder.tvSold.text = ""
+            }
 
             // Disable Add to Cart button in wishlist (just hide it)
             holder.btnAddToCart.visibility = View.GONE

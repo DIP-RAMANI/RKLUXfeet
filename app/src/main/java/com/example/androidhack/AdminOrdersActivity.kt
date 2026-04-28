@@ -1,6 +1,7 @@
 package com.example.androidhack
 
 import android.app.AlertDialog
+import android.widget.LinearLayout
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -69,7 +70,9 @@ class AdminOrdersActivity : AppCompatActivity() {
         // Status Chips
         setupFilterChip(R.id.chipFilterAll, "All")
         setupFilterChip(R.id.chipFilterPending, "Pending")
+        setupFilterChip(R.id.chipFilterConfirmed, "Confirmed")
         setupFilterChip(R.id.chipFilterShipped, "Shipped")
+        setupFilterChip(R.id.chipFilterOutForDelivery, "Out for Delivery")
         setupFilterChip(R.id.chipFilterDelivered, "Delivered")
         setupFilterChip(R.id.chipFilterCancelled, "Cancelled")
 
@@ -80,7 +83,9 @@ class AdminOrdersActivity : AppCompatActivity() {
         val allChips = listOf(
             R.id.chipFilterAll, 
             R.id.chipFilterPending, 
+            R.id.chipFilterConfirmed,
             R.id.chipFilterShipped, 
+            R.id.chipFilterOutForDelivery,
             R.id.chipFilterDelivered, 
             R.id.chipFilterCancelled
         )
@@ -165,10 +170,12 @@ class AdminOrdersActivity : AppCompatActivity() {
             val tvPayment: TextView     = view.findViewById(R.id.tvOrderPaymentMethod)
             val tvPrice: TextView       = view.findViewById(R.id.tvOrderPrice)
             val tvStatus: TextView      = view.findViewById(R.id.tvOrderStatus)
-            val btnPending: MaterialButton   = view.findViewById(R.id.btnSetPending)
-            val btnShipped: MaterialButton   = view.findViewById(R.id.btnSetShipped)
-            val btnDelivered: MaterialButton = view.findViewById(R.id.btnSetDelivered)
-            val btnCancelled: MaterialButton = view.findViewById(R.id.btnSetCancelled)
+            val btnPending: MaterialButton         = view.findViewById(R.id.btnSetPending)
+            val btnConfirmed: MaterialButton        = view.findViewById(R.id.btnSetConfirmed)
+            val btnShipped: MaterialButton          = view.findViewById(R.id.btnSetShipped)
+            val btnOutForDelivery: MaterialButton   = view.findViewById(R.id.btnSetOutForDelivery)
+            val btnDelivered: MaterialButton        = view.findViewById(R.id.btnSetDelivered)
+            val btnCancelled: MaterialButton        = view.findViewById(R.id.btnSetCancelled)
         }
 
         fun updateData(newOrders: List<OrderModel>) {
@@ -198,11 +205,13 @@ class AdminOrdersActivity : AppCompatActivity() {
             holder.tvStatus.text = order.status
 
             val statusColor = when (order.status) {
-                "Pending"   -> Color.parseColor("#E53935") // Red
-                "Shipped"   -> Color.parseColor("#FB8C00") // Orange
-                "Delivered" -> Color.parseColor("#43A047") // Green
-                "Cancelled" -> Color.parseColor("#757575") // Gray
-                else        -> Color.parseColor("#1A1A2E") 
+                "Pending"          -> Color.parseColor("#FFB300")
+                "Confirmed"        -> Color.parseColor("#7C4DFF")
+                "Shipped"          -> Color.parseColor("#FB8C00")
+                "Out for Delivery" -> Color.parseColor("#00ACC1")
+                "Delivered"        -> Color.parseColor("#43A047")
+                "Cancelled"        -> Color.parseColor("#757575")
+                else               -> Color.parseColor("#1A1A2E")
             }
             holder.tvStatus.backgroundTintList = ColorStateList.valueOf(statusColor)
 
@@ -212,25 +221,72 @@ class AdminOrdersActivity : AppCompatActivity() {
                 holder.ivImage.setImageResource(R.color.white)
             }
 
+            // Helper: update status + append to statusHistory
             val triggerStatusUpdate = { newStatus: String ->
-                // Confirmation Dialog Enhancement
                 AlertDialog.Builder(holder.itemView.context)
                     .setTitle("Update Status")
                     .setMessage("Are you sure you want to mark this order as $newStatus?")
                     .setPositiveButton("Yes") { _, _ ->
-                        db.collection("orders").document(order.id).update("status", newStatus)
-                            .addOnSuccessListener {
-                                Toast.makeText(holder.itemView.context, "Moved to $newStatus!", Toast.LENGTH_SHORT).show()
-                            }
+                        val orderRef = db.collection("orders").document(order.id)
+                        val historyEntry = hashMapOf(
+                            "status" to newStatus,
+                            "timestamp" to com.google.firebase.Timestamp.now()
+                        )
+                        orderRef.update(
+                            "status", newStatus,
+                            "statusHistory", com.google.firebase.firestore.FieldValue.arrayUnion(historyEntry)
+                        ).addOnSuccessListener {
+                            Toast.makeText(holder.itemView.context, "✅ Moved to $newStatus!", Toast.LENGTH_SHORT).show()
+                        }
                     }
                     .setNegativeButton("Cancel", null)
                     .show()
             }
 
-            holder.btnPending.setOnClickListener   { triggerStatusUpdate("Pending") }
-            holder.btnShipped.setOnClickListener   { triggerStatusUpdate("Shipped") }
-            holder.btnDelivered.setOnClickListener { triggerStatusUpdate("Delivered") }
-            holder.btnCancelled.setOnClickListener { triggerStatusUpdate("Cancelled") }
+            // Shipped: show tracking number dialog
+            val triggerShippedWithTracking = {
+                val ctx = holder.itemView.context
+                val layout = LinearLayout(ctx).apply {
+                    orientation = LinearLayout.VERTICAL
+                    setPadding(60, 40, 60, 20)
+                }
+                val etCourier = EditText(ctx).apply { hint = "Courier Name (e.g. BlueDart)"; setText("") }
+                val etTracking = EditText(ctx).apply { hint = "Tracking Number"; setText("") }
+                layout.addView(etCourier)
+                layout.addView(etTracking)
+
+                AlertDialog.Builder(ctx)
+                    .setTitle("📦 Shipping Details")
+                    .setMessage("Enter courier and tracking info (optional):")
+                    .setView(layout)
+                    .setPositiveButton("Mark Shipped") { _, _ ->
+                        val orderRef = db.collection("orders").document(order.id)
+                        val historyEntry = hashMapOf(
+                            "status" to "Shipped",
+                            "timestamp" to com.google.firebase.Timestamp.now()
+                        )
+                        val updates = hashMapOf<String, Any>(
+                            "status" to "Shipped",
+                            "statusHistory" to com.google.firebase.firestore.FieldValue.arrayUnion(historyEntry)
+                        )
+                        val courier = etCourier.text.toString().trim()
+                        val tracking = etTracking.text.toString().trim()
+                        if (courier.isNotEmpty()) updates["courierName"] = courier
+                        if (tracking.isNotEmpty()) updates["trackingNumber"] = tracking
+                        orderRef.update(updates).addOnSuccessListener {
+                            Toast.makeText(ctx, "✅ Marked as Shipped!", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    .setNegativeButton("Cancel", null)
+                    .show()
+            }
+
+            holder.btnPending.setOnClickListener        { triggerStatusUpdate("Pending") }
+            holder.btnConfirmed.setOnClickListener      { triggerStatusUpdate("Confirmed") }
+            holder.btnShipped.setOnClickListener        { triggerShippedWithTracking() }
+            holder.btnOutForDelivery.setOnClickListener { triggerStatusUpdate("Out for Delivery") }
+            holder.btnDelivered.setOnClickListener      { triggerStatusUpdate("Delivered") }
+            holder.btnCancelled.setOnClickListener      { triggerStatusUpdate("Cancelled") }
 
             // Allow admin to click the order card to see full details
             holder.itemView.setOnClickListener {

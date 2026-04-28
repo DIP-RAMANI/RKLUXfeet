@@ -110,6 +110,16 @@
                 android:paddingHorizontal="16dp"
                 android:layout_marginBottom="20dp" />
 
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Shoe Type *" android:textColor="#000000" android:textStyle="bold" android:layout_marginBottom="6dp" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Select the category for this shoe" android:textColor="#9E9E9E" android:textSize="11sp" android:layout_marginBottom="4dp" />
+            <Spinner
+                android:id="@+id/spShoeType"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:background="#F5F5F5"
+                android:paddingHorizontal="12dp"
+                android:layout_marginBottom="20dp" />
+
             <Switch
                 android:id="@+id/swInStock"
                 android:layout_width="wrap_content"
@@ -234,11 +244,11 @@
                     android:visibility="gone" />
             </LinearLayout>
 
-            <!-- IMAGE SLOT 3 (optional) -->
+            <!-- VIDEO SLOT 3 (optional) -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Image 3 (optional)"
+                android:text="Video (optional, slot 3)"
                 android:textColor="#757575"
                 android:textStyle="bold"
                 android:textSize="13sp"
@@ -261,7 +271,7 @@
                     android:layout_width="0dp"
                     android:layout_height="48dp"
                     android:layout_weight="1"
-                    android:text="📷 Pick"
+                    android:text="🎥 Pick Video"
                     android:textAllCaps="false"
                     android:backgroundTint="#5C6BC0"
                     android:layout_marginEnd="8dp" />

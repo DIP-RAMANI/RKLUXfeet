@@ -108,6 +108,7 @@
         <activity android:name=".AdminAddProductActivity"  android:exported="false" />
         <activity android:name=".AdminPromoCodesActivity"  android:exported="false" />
         <activity android:name=".AdminNotificationsActivity" android:exported="false" />
+        <activity android:name=".AdminReturnsActivity"     android:exported="false" />
 
         <!-- FCM Push Notification Service -->
         <service

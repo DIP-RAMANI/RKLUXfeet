@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_bottom_sheet"
+    android:padding="24dp">
+
+    <!-- Handle bar -->
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/bg_chip_inactive" />
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/tvFinderTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="🎯 Find Your Perfect Size"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#1A1A2E"
+        android:layout_marginBottom="4dp" />
+
+    <!-- Progress Dots -->
+    <LinearLayout
+        android:id="@+id/llStepDots"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="20dp">
+        <View
+            android:id="@+id/dot1"
+            android:layout_width="24dp"
+            android:layout_height="4dp"
+            android:background="#7C4DFF"
+            android:layout_marginEnd="4dp" />
+        <View
+            android:id="@+id/dot2"
+            android:layout_width="24dp"
+            android:layout_height="4dp"
+            android:background="#E0E0E0"
+            android:layout_marginEnd="4dp" />
+        <View
+            android:id="@+id/dot3"
+            android:layout_width="24dp"
+            android:layout_height="4dp"
+            android:background="#E0E0E0" />
+    </LinearLayout>
+
+    <!-- Step Question -->
+    <TextView
+        android:id="@+id/tvStepQuestion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="What brand do you currently wear?"
+        android:textSize="16sp"
+        android:textColor="#424242"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Options Container (dynamically populated) -->
+    <LinearLayout
+        android:id="@+id/llFinderOptions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" />
+
+    <!-- Result Container (hidden until step 3 complete) -->
+    <LinearLayout
+        android:id="@+id/llFinderResult"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:visibility="gone"
+        android:paddingVertical="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🎉"
+            android:textSize="40sp"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:id="@+id/tvResultTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="We recommend"
+            android:textSize="16sp"
+            android:textColor="#757575" />
+
+        <TextView
+            android:id="@+id/tvResultSize"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="UK 8"
+            android:textSize="36sp"
+            android:textStyle="bold"
+            android:textColor="#7C4DFF"
+            android:layout_marginVertical="8dp" />
+
+        <TextView
+            android:id="@+id/tvResultDesc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Based on your Nike UK 7 with a perfect fit"
+            android:textSize="13sp"
+            android:textColor="#757575"
+            android:gravity="center"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:id="@+id/btnSelectSize"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:gravity="center"
+            android:text="Select This Size"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/bg_brand_tab_active" />
+    </LinearLayout>
+
+</LinearLayout>

@@ -25,6 +25,7 @@ class StoreActivity : AppCompatActivity() {
         val imageUrl: String = "",
         val imageUrls: List<String> = emptyList(),
         val brand: String = "",
+        val shoeType: String = "",
         val timestamp: Long = 0L,
         val popularity: Int = 0,
         val discountPercent: Int = 0,
@@ -32,13 +33,16 @@ class StoreActivity : AppCompatActivity() {
         val specifications: String = "",
         val productStory: String = "",
         val features: String = "",
-        val details: String = ""
+        val details: String = "",
+        val avgRating: Double = 0.0,
+        val reviewCount: Int = 0
     )
 
     private lateinit var adapter: GridShoeAdapter
     private var allShoes = listOf<Shoe>()
     private var currentSort = "all"
     private var currentBrand = "all"
+    private var currentType = "all"
     private var currentSearch = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -78,13 +82,17 @@ class StoreActivity : AppCompatActivity() {
                     allShoes = snapshot.documents.map { doc ->
                         val urls = (doc.get("imageUrls") as? List<*>)?.filterIsInstance<String>() ?: emptyList()
                         val primary = doc.getString("imageUrl") ?: ""
+                        // Pick first non-video URL as thumbnail
+                        val thumbnailUrl = urls.firstOrNull { !it.endsWith(".mp4") && !it.endsWith(".mov") && !it.endsWith(".webm") }
+                            ?: if (!primary.endsWith(".mp4") && !primary.endsWith(".mov") && !primary.endsWith(".webm")) primary else ""
                         Shoe(
                             id              = doc.id,
                             name            = doc.getString("name") ?: "",
                             price           = doc.getString("price") ?: "",
-                            imageUrl        = primary,
+                            imageUrl        = thumbnailUrl,
                             imageUrls       = urls.ifEmpty { if (primary.isNotEmpty()) listOf(primary) else emptyList() },
                             brand           = doc.getString("brand") ?: "",
+                            shoeType        = doc.getString("shoeType") ?: "",
                             timestamp       = doc.getTimestamp("createdAt")?.toDate()?.time ?: doc.getLong("timestamp") ?: 0L,
                             popularity      = doc.getLong("popularity")?.toInt() ?: 0,
                             discountPercent = doc.getLong("discountPercent")?.toInt() ?: 0,
@@ -92,7 +100,9 @@ class StoreActivity : AppCompatActivity() {
                             specifications  = doc.getString("specifications") ?: "",
                             productStory    = doc.getString("productStory") ?: "",
                             features        = doc.getString("features") ?: "",
-                            details         = doc.getString("details") ?: ""
+                            details         = doc.getString("details") ?: "",
+                            avgRating       = doc.getDouble("avgRating") ?: 0.0,
+                            reviewCount     = doc.getLong("reviewCount")?.toInt() ?: 0
                         )
                     }
                     if (allShoes.isEmpty()) {
@@ -118,27 +128,18 @@ class StoreActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) {}
         })
 
-        // Sort chips
-        setupChip(R.id.chipAll, "all")
-        setupChip(R.id.chipPriceLow, "price_low")
-        setupChip(R.id.chipPriceHigh, "price_high")
-        setupChip(R.id.chipNewArrivals, "new")
-        setupChip(R.id.chipBestseller, "bestseller")
-
-        val initialSort = intent.getStringExtra("initial_sort") ?: "all"
-        when(initialSort) {
-            "new" -> findViewById<TextView>(R.id.chipNewArrivals).performClick()
-            "bestseller" -> findViewById<TextView>(R.id.chipBestseller).performClick()
-            else -> findViewById<TextView>(R.id.chipAll).performClick()
+        // Filter button opens bottom sheet
+        findViewById<androidx.cardview.widget.CardView>(R.id.cvFilterBtn).setOnClickListener {
+            showFilterBottomSheet()
         }
 
-        // Brand chips
-        setupBrandChip(R.id.brandAll, "all")
-        setupBrandChip(R.id.brandNike, "nike")
-        setupBrandChip(R.id.brandAdidas, "adidas")
-        setupBrandChip(R.id.brandPuma, "puma")
-        setupBrandChip(R.id.brandAsics, "asics")
-        setupBrandChip(R.id.brandOther, "other")
+        // Handle initial filters from intent
+        val initialSort = intent.getStringExtra("initial_sort") ?: "all"
+        if (initialSort != "all") currentSort = initialSort
+        val initialType = intent.getStringExtra("initial_type") ?: "all"
+        if (initialType != "all") currentType = initialType
+
+        updateActiveFilterLabel()
 
         // Bottom nav
         bottomNav.setItemSelected(R.id.nav_shop, true)
@@ -181,40 +182,165 @@ class StoreActivity : AppCompatActivity() {
             }
     }
 
-    private fun setupChip(id: Int, sort: String) {
-        val allChipIds = listOf(R.id.chipAll, R.id.chipPriceLow, R.id.chipPriceHigh, R.id.chipNewArrivals, R.id.chipBestseller)
-        findViewById<TextView>(id).setOnClickListener {
-            currentSort = sort
-            allChipIds.forEach { chipId ->
-                val chip = findViewById<TextView>(chipId)
-                if (chipId == id) {
-                    chip.setBackgroundResource(R.drawable.bg_chip_active)
-                    chip.setTextColor(android.graphics.Color.WHITE)
-                } else {
-                    chip.setBackgroundResource(R.drawable.bg_chip_inactive)
-                    chip.setTextColor(android.graphics.Color.BLACK)
-                }
+    private fun updateActiveFilterLabel() {
+        val parts = mutableListOf<String>()
+        if (currentSort != "all") {
+            val sortLabel = when (currentSort) {
+                "price_low" -> "Low→High"
+                "price_high" -> "High→Low"
+                "new" -> "New Arrivals"
+                "bestseller" -> "Bestsellers"
+                else -> ""
             }
-            applyFiltersAndSort()
+            if (sortLabel.isNotEmpty()) parts.add(sortLabel)
         }
+        if (currentBrand != "all") parts.add(currentBrand.replaceFirstChar { it.uppercase() })
+        if (currentType != "all") parts.add(currentType.replaceFirstChar { it.uppercase() })
+
+        val tv = findViewById<TextView>(R.id.tvActiveFilters)
+        tv.text = if (parts.isNotEmpty()) parts.joinToString(" · ") else ""
     }
 
-    private fun setupBrandChip(id: Int, brand: String) {
-        val allBrandIds = listOf(R.id.brandAll, R.id.brandNike, R.id.brandAdidas, R.id.brandPuma, R.id.brandAsics, R.id.brandOther)
-        findViewById<TextView>(id).setOnClickListener {
-            currentBrand = brand
-            allBrandIds.forEach { chipId ->
-                val chip = findViewById<TextView>(chipId)
-                if (chipId == id) {
-                    chip.setBackgroundResource(R.drawable.bg_chip_outline_active)
-                    chip.setTextColor(android.graphics.Color.BLACK)
+    private fun showFilterBottomSheet() {
+        val dialog = com.google.android.material.bottomsheet.BottomSheetDialog(this)
+        val view = layoutInflater.inflate(R.layout.dialog_filter, null)
+        dialog.setContentView(view)
+
+        // Make background transparent so our rounded corners show
+        (view.parent as? View)?.setBackgroundColor(android.graphics.Color.TRANSPARENT)
+
+        // Temporary state while user picks filters
+        var tempSort = currentSort
+        var tempBrand = currentBrand
+        var tempType = currentType
+
+        // === SORT CHIPS ===
+        val sortChips = mapOf(
+            R.id.chipAll to "all",
+            R.id.chipPriceLow to "price_low",
+            R.id.chipPriceHigh to "price_high",
+            R.id.chipNewArrivals to "new",
+            R.id.chipBestseller to "bestseller"
+        )
+        fun updateSortUI() {
+            sortChips.forEach { (id, sort) ->
+                val chip = view.findViewById<TextView>(id)
+                if (sort == tempSort) {
+                    chip.setBackgroundResource(R.drawable.bg_filter_chip_selected)
+                    chip.setTextColor(android.graphics.Color.WHITE)
                 } else {
-                    chip.setBackgroundResource(R.drawable.bg_chip_outline_inactive)
-                    chip.setTextColor(android.graphics.Color.parseColor("#757575"))
+                    chip.setBackgroundResource(R.drawable.bg_filter_chip)
+                    chip.setTextColor(android.graphics.Color.parseColor("#424242"))
                 }
             }
-            applyFiltersAndSort()
         }
+        updateSortUI()
+        sortChips.forEach { (id, sort) ->
+            view.findViewById<TextView>(id).setOnClickListener {
+                tempSort = sort
+                updateSortUI()
+            }
+        }
+
+        // === BRAND CHIPS ===
+        val brandChips = mapOf(
+            R.id.chipBrandAll to "all",
+            R.id.chipBrandNike to "nike",
+            R.id.chipBrandAdidas to "adidas",
+            R.id.chipBrandPuma to "puma",
+            R.id.chipBrandAsics to "asics",
+            R.id.chipBrandOther to "other"
+        )
+        val brandTextIds = mapOf(
+            R.id.chipBrandAll to R.id.tvChipBrandAll,
+            R.id.chipBrandNike to R.id.tvChipBrandNike,
+            R.id.chipBrandAdidas to R.id.tvChipBrandAdidas,
+            R.id.chipBrandPuma to R.id.tvChipBrandPuma,
+            R.id.chipBrandAsics to R.id.tvChipBrandAsics,
+            R.id.chipBrandOther to R.id.tvChipBrandOther
+        )
+        fun updateBrandUI() {
+            brandChips.forEach { (id, brand) ->
+                val container = view.findViewById<View>(id)
+                val tv = view.findViewById<TextView>(brandTextIds[id]!!)
+                if (brand == tempBrand) {
+                    container.setBackgroundResource(R.drawable.bg_filter_chip_selected)
+                    tv.setTextColor(android.graphics.Color.WHITE)
+                } else {
+                    container.setBackgroundResource(R.drawable.bg_filter_chip)
+                    tv.setTextColor(android.graphics.Color.parseColor("#424242"))
+                }
+            }
+        }
+        updateBrandUI()
+        brandChips.forEach { (id, brand) ->
+            view.findViewById<View>(id).setOnClickListener {
+                tempBrand = brand
+                updateBrandUI()
+            }
+        }
+
+        // === TYPE CHIPS ===
+        val typeChips = mapOf(
+            R.id.chipTypeAll to "all",
+            R.id.chipTypeRunning to "running",
+            R.id.chipTypeCasual to "casual",
+            R.id.chipTypeFormal to "formal",
+            R.id.chipTypeSports to "sports",
+            R.id.chipTypeSneakers to "sneakers",
+            R.id.chipTypeLoafers to "loafers"
+        )
+        val typeTextIds = mapOf(
+            R.id.chipTypeAll to R.id.tvChipTypeAll,
+            R.id.chipTypeRunning to R.id.tvChipTypeRunning,
+            R.id.chipTypeCasual to R.id.tvChipTypeCasual,
+            R.id.chipTypeFormal to R.id.tvChipTypeFormal,
+            R.id.chipTypeSports to R.id.tvChipTypeSports,
+            R.id.chipTypeSneakers to R.id.tvChipTypeSneakers,
+            R.id.chipTypeLoafers to R.id.tvChipTypeLoafers
+        )
+        fun updateTypeUI() {
+            typeChips.forEach { (id, type) ->
+                val container = view.findViewById<View>(id)
+                val tv = view.findViewById<TextView>(typeTextIds[id]!!)
+                if (type == tempType) {
+                    container.setBackgroundResource(R.drawable.bg_filter_chip_selected)
+                    tv.setTextColor(android.graphics.Color.WHITE)
+                } else {
+                    container.setBackgroundResource(R.drawable.bg_filter_chip)
+                    tv.setTextColor(android.graphics.Color.parseColor("#424242"))
+                }
+            }
+        }
+        updateTypeUI()
+        typeChips.forEach { (id, type) ->
+            view.findViewById<View>(id).setOnClickListener {
+                tempType = type
+                updateTypeUI()
+            }
+        }
+
+        // Reset All
+        view.findViewById<TextView>(R.id.tvResetFilters).setOnClickListener {
+            tempSort = "all"
+            tempBrand = "all"
+            tempType = "all"
+            updateSortUI()
+            updateBrandUI()
+            updateTypeUI()
+        }
+
+        // Apply
+        view.findViewById<android.widget.Button>(R.id.btnApplyFilters).setOnClickListener {
+            currentSort = tempSort
+            currentBrand = tempBrand
+            currentType = tempType
+            applyFiltersAndSort()
+            updateActiveFilterLabel()
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 
     private fun parsePrice(price: String): Double {
@@ -239,6 +365,11 @@ class StoreActivity : AppCompatActivity() {
             } else {
                 filtered.filter { it.brand.equals(currentBrand, ignoreCase = true) }
             }
+        }
+
+        // Type filter — uses the `shoeType` Firestore field
+        if (currentType != "all") {
+            filtered = filtered.filter { it.shoeType.equals(currentType, ignoreCase = true) }
         }
 
         // Sort
@@ -311,12 +442,14 @@ class StoreActivity : AppCompatActivity() {
                 holder.cvBadge.visibility = View.GONE
             }
 
-            // Deterministic rating & sold based on shoe ID hash (consistent across all screens)
-            val hash = shoe.id.hashCode().and(0x7FFFFFFF)
-            val fakeRating = 4.0 + (hash % 10) * 0.1
-            holder.tvRating.text = "⭐ ${String.format(java.util.Locale.US, "%.1f", fakeRating)}"
-            val sold = 50 + (hash % 251)
-            holder.tvSold.text = "$sold sold"
+            // Real rating from Firestore reviews
+            if (shoe.reviewCount > 0) {
+                holder.tvRating.text = "⭐ ${String.format(java.util.Locale.US, "%.1f", shoe.avgRating)}"
+                holder.tvSold.text = "${shoe.reviewCount} reviews"
+            } else {
+                holder.tvRating.text = "⭐ New"
+                holder.tvSold.text = ""
+            }
 
             // Quick Add to Cart
             holder.btnAddToCart.setOnClickListener {

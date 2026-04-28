@@ -1,45 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Base Image -->
+    <!-- Full Background Image -->
     <ImageView
         android:id="@+id/ivBannerSlide"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop" />
 
-    <!-- Dark Gradient Overlay for text readability -->
-    <View
+
+    <!-- Text Content -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#40000000" />
+        android:orientation="vertical"
+        android:gravity="center_vertical"
+        android:paddingStart="22dp"
+        android:paddingEnd="22dp"
+        android:paddingVertical="16dp">
 
-    <!-- Text Overlays -->
-    <TextView
-        android:id="@+id/tvBannerTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Summer Collection \uD83D\uDD25"
-        android:textColor="#FFFFFF"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:layout_marginStart="20dp"
-        app:layout_constraintBottom_toTopOf="@+id/tvBannerDiscount"
-        app:layout_constraintStart_toStartOf="parent" />
+        <!-- Badge -->
+        <TextView
+            android:id="@+id/tvBannerBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🔥 Summer Sale"
+            android:textColor="#FFFFFF"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="4dp"
+            android:background="@drawable/bg_banner_badge" />
 
-    <TextView
-        android:id="@+id/tvBannerDiscount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Up to 40% OFF"
-        android:textColor="#FFFFFF"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="20dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/tvBannerTitle" />
+        <!-- Main Title -->
+        <TextView
+            android:id="@+id/tvBannerTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Upgrade Your\nSneaker Game"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:lineSpacingExtra="2dp"
+            android:shadowColor="#80000000"
+            android:shadowDx="1"
+            android:shadowDy="1"
+            android:shadowRadius="4"
+            android:layout_marginTop="8dp" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- Discount -->
+        <TextView
+            android:id="@+id/tvBannerDiscount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Up to 40% OFF"
+            android:textColor="#FFD54F"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:layout_marginTop="4dp" />
+
+        <!-- Coupon Code -->
+        <LinearLayout
+            android:id="@+id/llCouponCode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="6dp"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="3dp"
+            android:background="@drawable/bg_coupon_code">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="✂ "
+                android:textSize="10sp" />
+            <TextView
+                android:id="@+id/tvCouponCode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SUMMER40"
+                android:textColor="#FFFFFF"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.1" />
+        </LinearLayout>
+
+        <!-- Shop Now Button -->
+        <TextView
+            android:id="@+id/btnShopNow"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:gravity="center"
+            android:paddingHorizontal="20dp"
+            android:layout_marginTop="8dp"
+            android:text="Shop Now →"
+            android:textColor="#7C4DFF"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:background="@drawable/bg_shop_now_btn" />
+
+    </LinearLayout>
+
+</FrameLayout>

@@ -73,6 +73,12 @@ class ProfileActivity : AppCompatActivity() {
             startActivity(Intent(this, OrderHistoryActivity::class.java))
         }
 
+        findViewById<View>(R.id.llClearHistory).setOnClickListener {
+            val prefs = getSharedPreferences("recently_viewed", android.content.Context.MODE_PRIVATE)
+            prefs.edit().clear().apply()
+            Toast.makeText(this, "Recently viewed history cleared", Toast.LENGTH_SHORT).show()
+        }
+
         findViewById<View>(R.id.llAppSettings).setOnClickListener {
             // Open Android system App Settings for this app
             val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {

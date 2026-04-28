@@ -173,6 +173,13 @@
                         <TextView android:text="Order History" style="@style/ProfileMenuText" />
                         <ImageView android:src="@drawable/ic_chevron_right" style="@style/ProfileMenuIconRight" app:tint="#757575"/>
                     </LinearLayout>
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F5F5F5" android:layout_marginStart="56dp"/>
+
+                    <LinearLayout android:id="@+id/llClearHistory" style="@style/ProfileMenuItem">
+                        <ImageView android:src="@android:drawable/ic_menu_delete" style="@style/ProfileMenuIcon" app:tint="#757575"/>
+                        <TextView android:text="Clear Recently Viewed" style="@style/ProfileMenuText" />
+                        <ImageView android:src="@drawable/ic_chevron_right" style="@style/ProfileMenuIconRight" app:tint="#757575"/>
+                    </LinearLayout>
 
 
                 </LinearLayout>
