@@ -2,6 +2,8 @@ package com.example.androidhack
 
 import android.app.AlertDialog
 import android.content.Intent
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -16,8 +18,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.androidhack.models.ProductFields
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.firestore.FirebaseFirestore
+import java.text.NumberFormat
+import java.util.Locale
 
 class AdminProductsActivity : AppCompatActivity() {
 
@@ -26,7 +31,8 @@ class AdminProductsActivity : AppCompatActivity() {
         val name: String = "",
         val price: String = "",
         val imageUrl: String = "",
-        val inStock: Boolean = true // Mock stock enhancement
+        val inStock: Boolean = true,
+        val totalStock: Int? = null
     )
 
     private val db = FirebaseFirestore.getInstance()
@@ -73,6 +79,20 @@ class AdminProductsActivity : AppCompatActivity() {
 
     private fun loadProducts() {
         db.collection("products").get().addOnSuccessListener { snapshot ->
+            for (doc in snapshot.documents) {
+                if (!doc.contains("priceNum") || doc.get("priceNum") == null) {
+                    val price = doc.getString("price") ?: ""
+                    val parsedPrice = ProductFields.parsePrice(price)
+                    val discountPercent = (doc.getLong("discountPercent") ?: 0L).toInt()
+                    doc.reference.update(
+                        mapOf(
+                            "priceNum" to parsedPrice,
+                            "finalPriceNum" to ProductFields.finalPrice(parsedPrice, discountPercent)
+                        )
+                    )
+                }
+            }
+
             allProducts = snapshot.documents.mapIndexed { index, doc ->
                 ProductModel(
                     id       = doc.id,
@@ -80,7 +100,8 @@ class AdminProductsActivity : AppCompatActivity() {
                     price    = doc.getString("price") ?: "",
                     imageUrl = doc.getString("imageUrl") ?: "",
                     // Read actual stock status from database, default to true
-                    inStock  = doc.getBoolean("inStock") ?: true
+                    inStock  = doc.getBoolean("inStock") ?: true,
+                    totalStock = (doc.get("totalStock") as? Number)?.toInt()
                 )
             }
             applyFilters()
@@ -122,7 +143,10 @@ class AdminProductsActivity : AppCompatActivity() {
         override fun onBindViewHolder(holder: ProductVH, position: Int) {
             val product = products[position]
             holder.tvName.text  = product.name
-            holder.tvPrice.text = product.price
+
+            val parsedPrice = ProductFields.parsePrice(product.price).toLong()
+            val formatter = NumberFormat.getIntegerInstance(Locale("en", "IN"))
+            holder.tvPrice.text = "₹" + formatter.format(parsedPrice)
             
             if (product.imageUrl.isNotEmpty()) {
                 Glide.with(holder.itemView.context).load(product.imageUrl.optimizeCloudinaryUrl()).centerCrop().into(holder.ivImage)
@@ -131,12 +155,30 @@ class AdminProductsActivity : AppCompatActivity() {
             }
 
             // Map Stock Pill Colors Native Android
-            if (product.inStock) {
-                holder.tvStatus.text = "In Stock"
-                holder.tvStatus.backgroundTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#4CAF50"))
+            val total = product.totalStock
+            if (total != null) {
+                when {
+                    !product.inStock || total <= 0 -> {
+                        holder.tvStatus.text = "Out of stock"
+                        holder.tvStatus.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#E53935"))
+                    }
+                    total in 1..5 -> {
+                        holder.tvStatus.text = "Low stock · $total"
+                        holder.tvStatus.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FF9800"))
+                    }
+                    else -> {
+                        holder.tvStatus.text = "In Stock · $total pairs"
+                        holder.tvStatus.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#4CAF50"))
+                    }
+                }
             } else {
-                holder.tvStatus.text = "Out of Stock"
-                holder.tvStatus.backgroundTintList = android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#E53935"))
+                if (product.inStock) {
+                    holder.tvStatus.text = "In Stock"
+                    holder.tvStatus.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#4CAF50"))
+                } else {
+                    holder.tvStatus.text = "Out of Stock"
+                    holder.tvStatus.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#E53935"))
+                }
             }
 
             // Edit Event Interceptor

@@ -99,6 +99,10 @@
         <activity
             android:name=".OrderDetailsActivity"
             android:exported="false" />
+        <activity
+            android:name=".StylistActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
 
         <!-- Admin Panel Activities -->
         <activity android:name=".AdminDashboardActivity"  android:exported="false" />

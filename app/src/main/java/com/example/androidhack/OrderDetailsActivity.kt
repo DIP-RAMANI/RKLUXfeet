@@ -601,6 +601,7 @@ class OrderDetailsActivity : AppCompatActivity() {
         if (isDelivered && currentOrderId.isNotEmpty()) {
             db.collection("returnRequests")
                 .whereEqualTo("orderId", currentOrderId)
+                .whereEqualTo("userId", uid ?: "")
                 .get()
                 .addOnSuccessListener { snap ->
                     if (!snap.isEmpty) {

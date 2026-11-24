@@ -214,50 +214,43 @@ class CheckoutActivity : AppCompatActivity(), PaymentResultListener {
         pendingOrderId = null
         pendingOrderData = null
 
-        // Count existing orders to generate a sequential short ID like RKLUX001
-        db.collection("orders").get().addOnSuccessListener { snapshot ->
-            // Use UUID-prefix + count for a collision-safe short ID (e.g. RKLUX-A3F-007)
-            val nextNum   = snapshot.size() + 1
-            val shortId   = "RKLUX" + nextNum.toString().padStart(3, '0') + "-" + java.util.UUID.randomUUID().toString().take(4).uppercase()
-            val orderId   = java.util.UUID.randomUUID().toString()
+        val shortId = "RKLUX-" + UUID.randomUUID().toString().replace("-", "").take(6).uppercase()
+        val orderId = UUID.randomUUID().toString()
 
-            val itemsMap = cartItems.map {
-                mapOf(
-                    "id"       to it.id,
-                    "name"     to it.name,
-                    "price"    to it.price,
-                    "imageUrl" to it.imageUrl,
-                    "quantity" to it.quantity,
-                    "size"     to it.size
-                )
-            }
-
-            val orderData = hashMapOf(
-                "orderId"          to orderId,
-                "shortOrderId"     to shortId,
-                "userId"           to (uid ?: "guest"),
-                "customerName"     to name,
-                "address"          to "$addressLine, $city - $pincode",
-                "phone"            to phone,
-                "paymentMethod"    to paymentMethod,
-                "status"           to "Pending",
-                "totalAmount"      to grandTotal,
-                "appliedPromoCode" to (appliedPromo?.code ?: ""),
-                "discountAmount"   to actualDiscountAmount,
-                "items"            to itemsMap,
-                "createdAt"        to com.google.firebase.Timestamp.now()
+        val itemsMap = cartItems.map {
+            mapOf(
+                "id"       to it.id,
+                "name"     to it.name,
+                "price"    to it.price,
+                "imageUrl" to it.imageUrl,
+                "quantity" to it.quantity,
+                "size"     to it.size
             )
+        }
 
-            pendingOrderId   = orderId
-            pendingOrderData = orderData
+        val orderData = hashMapOf(
+            "orderId"          to orderId,
+            "shortOrderId"     to shortId,
+            "userId"           to (uid ?: "guest"),
+            "customerName"     to name,
+            "address"          to "$addressLine, $city - $pincode",
+            "phone"            to phone,
+            "paymentMethod"    to paymentMethod,
+            "status"           to "Pending",
+            "totalAmount"      to grandTotal,
+            "appliedPromoCode" to (appliedPromo?.code ?: ""),
+            "discountAmount"   to actualDiscountAmount,
+            "items"            to itemsMap,
+            "createdAt"        to com.google.firebase.Timestamp.now()
+        )
 
-            if (paymentMethod == "COD") {
-                saveOrderToFirestore()
-            } else {
-                startRazorpayCheckout(name, phone, auth.currentUser?.email ?: "guest@example.com")
-            }
-        }.addOnFailureListener {
-            Toast.makeText(this, "Failed to place order. Try again.", Toast.LENGTH_SHORT).show()
+        pendingOrderId   = orderId
+        pendingOrderData = orderData
+
+        if (paymentMethod == "COD") {
+            saveOrderToFirestore()
+        } else {
+            startRazorpayCheckout(name, phone, auth.currentUser?.email ?: "guest@example.com")
         }
     }
 

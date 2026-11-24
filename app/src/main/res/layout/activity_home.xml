@@ -284,6 +284,33 @@
                     android:paddingHorizontal="20dp"
                     android:gravity="center_vertical">
 
+                    <!-- AI Stylist Chip -->
+                    <LinearLayout
+                        android:id="@+id/chipAiStylist"
+                        android:layout_width="wrap_content"
+                        android:layout_height="38dp"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="14dp"
+                        android:background="@drawable/bg_chip_ai"
+                        android:layout_marginEnd="10dp"
+                        android:clickable="true"
+                        android:focusable="true">
+                        <ImageView
+                            android:layout_width="18dp"
+                            android:layout_height="18dp"
+                            android:src="@drawable/ic_sparkle"
+                            app:tint="#FFFFFF"
+                            android:layout_marginEnd="6dp" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Ask AI ✨"
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            android:textColor="#FFFFFF" />
+                    </LinearLayout>
+
                     <!-- All (selected by default) -->
                     <LinearLayout
                         android:id="@+id/catAll"
@@ -590,6 +617,24 @@
         app:cnb_unselectedColor="@color/tab_icon_color"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Floating "Ask AI" Button -->
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/fabAskAi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="16dp"
+        android:text="Ask AI"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:icon="@drawable/ic_sparkle"
+        app:iconTint="#FFFFFF"
+        app:backgroundTint="#7C4DFF"
+        app:elevation="8dp"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigation"
         app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

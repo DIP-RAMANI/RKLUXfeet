@@ -1,17 +1,21 @@
 package com.example.androidhack
 
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Spinner
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.cloudinary.android.MediaManager
+import com.example.androidhack.models.ProductFields
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -91,14 +95,30 @@ class AdminAddProductActivity : AppCompatActivity() {
         
         // Setup Shoe Type Spinner
         spShoeType = findViewById(R.id.spShoeType)
-        val typeAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, shoeTypes)
+        val typeAdapter = object : ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, shoeTypes) {
+            override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+                val v = super.getView(position, convertView, parent) as TextView
+                v.setTextColor(Color.parseColor("#111111"))
+                return v
+            }
+
+            override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
+                val v = super.getDropDownView(position, convertView, parent) as TextView
+                v.setTextColor(Color.parseColor("#111111"))
+                return v
+            }
+        }
         typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spShoeType.adapter = typeAdapter
 
+        val tvTitle = findViewById<TextView>(R.id.tvAdminProductTitle)
         editProductId = intent.getStringExtra("productId")
         if (editProductId != null) {
+            tvTitle.text = "Edit Product"
             findViewById<Button>(R.id.btnSaveAdminProduct).text = "✅  Update Product"
             loadProductData(editProductId!!)
+        } else {
+            tvTitle.text = "Add New Product"
         }
 
         // Save button
@@ -135,7 +155,15 @@ class AdminAddProductActivity : AppCompatActivity() {
             uploadAllImages(name, price, story, features, details, brand, shoeType, discount, inStock, selectedUris.toList())
         }
     }
-    
+
+    private fun stockFieldIds(): List<Int> = listOf(
+        R.id.etStockUk6,
+        R.id.etStockUk7,
+        R.id.etStockUk8,
+        R.id.etStockUk9,
+        R.id.etStockUk10
+    )
+
     private fun loadProductData(id: String) {
         db.collection("products").document(id).get().addOnSuccessListener { doc ->
             if (doc.exists()) {
@@ -145,6 +173,23 @@ class AdminAddProductActivity : AppCompatActivity() {
                 findViewById<EditText>(R.id.etAdminProductFeatures).setText(doc.getString("features") ?: "")
                 findViewById<EditText>(R.id.etAdminProductDetails).setText(doc.getString("details") ?: "")
                 findViewById<EditText>(R.id.etAdminProductBrand).setText(doc.getString("brand") ?: "")
+
+                val colorsList = (doc.get("colors") as? List<*>)?.filterIsInstance<String>() ?: emptyList()
+                findViewById<EditText>(R.id.etAdminProductColors).setText(colorsList.joinToString(", "))
+
+                val occasionsList = (doc.get("occasions") as? List<*>)?.filterIsInstance<String>() ?: emptyList()
+                findViewById<EditText>(R.id.etAdminProductOccasions).setText(occasionsList.joinToString(", "))
+
+                val sizeStockMap = doc.get("sizeStock") as? Map<*, *>
+                val fieldIds = stockFieldIds()
+                ProductFields.SIZES.forEachIndexed { index, size ->
+                    val stockVal = when (val v = sizeStockMap?.get(size)) {
+                        is Number -> v.toLong()
+                        is String -> v.toLongOrNull()
+                        else -> null
+                    }
+                    findViewById<EditText>(fieldIds[index]).setText(stockVal?.toString() ?: "")
+                }
                 
                 // Pre-select shoe type in spinner
                 val savedType = doc.getString("shoeType") ?: ""
@@ -233,9 +278,33 @@ class AdminAddProductActivity : AppCompatActivity() {
         details: String, brand: String, shoeType: String, discountPercent: Int, inStock: Boolean,
         imageUrls: List<String>
     ) {
-        val product = hashMapOf(
+        val priceNum = ProductFields.parsePrice(price)
+        val colors = ProductFields.splitTags(findViewById<EditText>(R.id.etAdminProductColors).text.toString())
+        val occasions = ProductFields.splitTags(findViewById<EditText>(R.id.etAdminProductOccasions).text.toString())
+
+        val sizeStock = mutableMapOf<String, Int>()
+        val fieldIds = stockFieldIds()
+        ProductFields.SIZES.forEachIndexed { index, size ->
+            val text = findViewById<EditText>(fieldIds[index]).text.toString().trim()
+            if (text.isNotEmpty()) {
+                val qty = (text.toIntOrNull() ?: 0).coerceAtLeast(0)
+                sizeStock[size] = qty
+            }
+        }
+        val totalStock = sizeStock.values.sum()
+        val finalInStock = if (sizeStock.isNotEmpty()) (inStock && totalStock > 0) else inStock
+        val sizes = ProductFields.SIZES.filter { (sizeStock[it] ?: 0) > 0 }
+
+        val product = hashMapOf<String, Any>(
             "name"            to name,
             "price"           to price,
+            "priceNum"        to priceNum,
+            "finalPriceNum"   to ProductFields.finalPrice(priceNum, discountPercent),
+            "colors"          to colors,
+            "occasions"       to occasions,
+            "sizeStock"       to sizeStock,
+            "sizes"           to sizes,
+            "totalStock"      to totalStock,
             "productStory"    to story,
             "features"        to features,
             "details"         to details,
@@ -245,14 +314,14 @@ class AdminAddProductActivity : AppCompatActivity() {
             "brand"           to brand.lowercase(),
             "shoeType"        to shoeType.lowercase(),
             "discountPercent" to discountPercent,
-            "inStock"         to inStock,
+            "inStock"         to finalInStock,
             "imageUrl"        to (imageUrls.firstOrNull { !it.endsWith(".mp4") && !it.endsWith(".mov") && !it.endsWith(".webm") } ?: imageUrls.firstOrNull() ?: ""),   // thumbnail — always an image
             "imageUrls"       to imageUrls,
             "createdAt"       to com.google.firebase.Timestamp.now()
         )
         
         if (editProductId != null) {
-            db.collection("products").document(editProductId!!).set(product)
+            db.collection("products").document(editProductId!!).update(product)
                 .addOnSuccessListener {
                     Toast.makeText(this, "✅ Product updated!", Toast.LENGTH_SHORT).show()
                     finish()

@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "26109313638",
+    "firebase_url": "https://rkluxfeet-default-rtdb.firebaseio.com",
     "project_id": "rkluxfeet",
     "storage_bucket": "rkluxfeet.firebasestorage.app"
   },
@@ -13,6 +14,14 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "26109313638-7or1frgl0sih46u966f2ri01ei8kf1pb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.androidhack",
+            "certificate_hash": "c6c719c221cc8d0e2bdd9f4c9536bb95eec0194c"
+          }
+        },
         {
           "client_id": "26109313638-88nd8lr46dtjnp2m4f6r0dduj6dkuhp8.apps.googleusercontent.com",
           "client_type": 1,

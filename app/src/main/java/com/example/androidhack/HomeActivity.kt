@@ -17,7 +17,16 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.Firebase
+import com.google.firebase.ai.ai
+import com.google.firebase.ai.type.GenerativeBackend
 import com.google.firebase.firestore.FirebaseFirestore
+import android.util.Log
+import android.widget.Toast
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class HomeActivity : AppCompatActivity() {
 
@@ -253,6 +262,14 @@ class HomeActivity : AppCompatActivity() {
                     overridePendingTransition(0, 0)
                 }, 150)
             }
+        }
+
+        // Open AI Shoe Stylist chat
+        findViewById<View>(R.id.fabAskAi)?.setOnClickListener {
+            startActivity(Intent(this, StylistActivity::class.java))
+        }
+        findViewById<View>(R.id.chipAiStylist)?.setOnClickListener {
+            startActivity(Intent(this, StylistActivity::class.java))
         }
     }
 
